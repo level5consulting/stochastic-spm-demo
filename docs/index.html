@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stochastic SPM — AI Portfolio Intelligence Demo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#FFFFFF;
+  --bg-panel:#F6F8FB;
+  --bg-panel-2:#EEF2F7;
+  --line:#E1E6EF;
+  --teal:#0F8577;
+  --teal-dim:#E3F5F1;
+  --teal-mid:#7FC4B8;
+  --amber:#B8720C;
+  --red:#C13A3E;
+  --violet:#5B4FC4;
+  --text:#1A2233;
+  --text-dim:#5A6C8F;
+  --text-faint:#7C8AA6;
+  --mono:'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  --sans:'Manrope','Inter',-apple-system,sans-serif;
+}
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background:radial-gradient(ellipse at top, #FFFFFF 0%, #F4F7FA 60%);
+  color:var(--text);
+  font-family:var(--sans);
+  min-height:100vh;
+  padding:0 0 60px 0;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:28px 24px 0;}
+
+/* ---------- HEADER ---------- */
+header{display:flex; align-items:flex-start; justify-content:space-between; gap:24px; padding-bottom:20px; border-bottom:1px solid var(--line);}
+.brand-eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--teal); text-transform:uppercase; margin-bottom:6px;}
+h1{font-size:26px; font-weight:800; letter-spacing:-0.01em;}
+h1 span{color:var(--teal);}
+.tagline{color:var(--text-dim); font-size:13.5px; margin-top:6px; max-width:520px;}
+.def-line{color:var(--teal); font-size:11.5px; margin-top:10px; font-family:var(--mono); background:var(--teal-dim); display:inline-block; padding:5px 12px; border-radius:6px;}
+.def-line b{font-style:normal;}
+.def-line i{color:var(--text-faint); font-style:italic;}
+.confidence-badge{
+  font-family:var(--mono); font-size:11px; color:var(--text-dim);
+  border:1px solid var(--line); border-radius:20px; padding:6px 14px 6px 12px;
+  display:flex; align-items:center; gap:8px; white-space:nowrap; height:fit-content;
+}
+.confidence-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--teal); box-shadow:0 0 8px var(--teal);}
+
+/* ---------- ACT NAV ---------- */
+.act-nav{display:flex; gap:6px; margin:22px 0 0; overflow-x:auto; padding-bottom:2px;}
+.act-btn{
+  flex:1; min-width:150px; background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+  padding:12px 14px; cursor:pointer; text-align:left; transition:all .15s ease; position:relative;
+  box-shadow:0 1px 3px rgba(20,30,60,0.05);
+}
+.act-btn:hover{border-color:var(--teal-mid);}
+.act-btn.active{border-color:var(--teal); background:linear-gradient(180deg, rgba(0,194,168,0.10), rgba(0,194,168,0.02));}
+.act-num{font-family:var(--mono); font-size:10px; color:var(--text-faint); letter-spacing:.08em;}
+.act-btn.active .act-num{color:var(--teal);}
+.act-title{font-size:13px; font-weight:700; margin-top:3px;}
+.act-time{font-family:var(--mono); font-size:10px; color:var(--text-faint); margin-top:4px;}
+
+/* ---------- ACT PANEL ---------- */
+.act-panel{display:none; margin-top:26px; animation:fade .35s ease;}
+.act-panel.active{display:block;}
+@keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+.act-head{display:flex; justify-content:space-between; align-items:flex-end; gap:20px; flex-wrap:wrap; margin-bottom:18px;}
+.act-head h2{font-size:20px; font-weight:800;}
+.act-head p{color:var(--text-dim); font-size:13.5px; margin-top:4px; max-width:640px; line-height:1.5;}
+.act-quote{
+  font-family:var(--mono); font-size:12.5px; color:var(--amber); border-left:2px solid var(--amber);
+  padding:8px 0 8px 12px; margin-top:6px; max-width:420px; line-height:1.5;
+}
+
+.grid{display:grid; gap:16px;}
+.grid-2{grid-template-columns:1fr 1fr;}
+.grid-3{grid-template-columns:1fr 1fr 1fr;}
+.card{background:var(--bg-panel); border:1px solid var(--line); border-radius:12px; padding:18px; box-shadow:0 1px 4px rgba(20,30,60,0.05);}
+.card h3{font-size:13px; font-weight:700; display:flex; align-items:center; gap:8px;}
+.card .sub{font-size:11.5px; color:var(--text-faint); margin-top:2px; margin-bottom:12px;}
+.tag{font-family:var(--mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; padding:2px 7px; border-radius:5px;}
+.tag-red{background:rgba(229,72,77,.15); color:var(--red);}
+.tag-amber{background:rgba(201,127,10,.12); color:var(--amber);}
+.tag-teal{background:rgba(15,133,119,.12); color:var(--teal);}
+
+/* stat blocks */
+.stat{text-align:left;}
+.stat .num{font-size:30px; font-weight:800; font-family:var(--mono); line-height:1;}
+.stat .label{font-size:11px; color:var(--text-dim); margin-top:6px;}
+.stat.up .num{color:var(--teal);}
+.stat.down .num{color:var(--red);}
+
+/* Act1: spreadsheet mock */
+table.mock{width:100%; border-collapse:collapse; font-size:12px;}
+table.mock th{text-align:left; color:var(--text-faint); font-weight:600; font-family:var(--mono); font-size:10px; text-transform:uppercase; padding:6px 8px; border-bottom:1px solid var(--line);}
+table.mock td{padding:8px; border-bottom:1px solid var(--line); color:var(--text-dim);}
+table.mock tr:hover td{background:rgba(255,255,255,.02);}
+.flag{width:9px; height:9px; border-radius:50%; display:inline-block;}
+.flag.r{background:var(--red); box-shadow:0 0 6px var(--red);}
+.flag.y{background:var(--amber);}
+.flag.g{background:var(--teal);}
+.strike{opacity:.5;}
+
+/* Act2: task list */
+.tasklist{list-style:none; font-size:12.5px;}
+.tasklist li{display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px dashed var(--line); color:var(--text-dim);}
+.tasklist li b{color:var(--text); font-weight:600;}
+.tasklist .hrs{font-family:var(--mono); color:var(--amber); font-size:11px;}
+
+/* pillar subnav */
+.pillar-nav{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:18px;}
+.pillar-btn{background:var(--bg-panel-2); border:1px solid var(--line); border-radius:9px; padding:9px 6px; cursor:pointer; text-align:center;}
+.pillar-btn.active{border-color:var(--violet); background:linear-gradient(180deg, rgba(139,124,246,0.14), rgba(139,124,246,0.02));}
+.pillar-btn .pnum{font-family:var(--mono); font-size:9px; color:var(--text-faint);}
+.pillar-btn.active .pnum{color:var(--violet);}
+.pillar-btn .pname{font-size:10.5px; font-weight:700; margin-top:3px; line-height:1.25;}
+
+.pillar-panel{display:none;}
+.pillar-panel.active{display:block; animation:fade .3s ease;}
+
+canvas{max-height:230px;}
+
+.callout{display:flex; gap:10px; align-items:flex-start; background:var(--bg-panel-2); border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-size:12px; color:var(--text-dim); line-height:1.5;}
+.callout b{color:var(--text);}
+
+.divider{height:1px; background:var(--line); margin:22px 0;}
+
+.footer-nav{display:flex; justify-content:space-between; margin-top:26px;}
+.nav-arrow{font-family:var(--mono); font-size:12px; color:var(--text-dim); background:none; border:1px solid var(--line); border-radius:8px; padding:9px 16px; cursor:pointer;}
+.nav-arrow:hover{border-color:var(--teal); color:var(--teal);}
+
+.legend-row{display:flex; gap:16px; font-size:10.5px; color:var(--text-faint); margin-top:8px; font-family:var(--mono);}
+.legend-row span{display:flex; align-items:center; gap:5px;}
+.legend-row i{width:8px;height:8px;border-radius:2px; display:inline-block;}
+.site-foot{margin-top:28px;padding:18px 0 8px;border-top:1px solid var(--line);text-align:center;color:var(--text-faint);font-size:12px;}
+.site-foot .cta{font-size:13.5px;color:var(--text-dim);margin-bottom:8px;}
+.cta-btn{display:inline-block;margin-left:8px;background:var(--teal);color:#fff;text-decoration:none;padding:6px 14px;border-radius:6px;font-weight:600;}
+.site-foot .disc{margin-bottom:4px;font-style:italic;}
+.illus-tag{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;background:var(--amber);color:#fff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:999px;z-index:50;opacity:.92;}
+.act-btn.active{background:var(--teal-dim);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="brand-eyebrow" id="cfgEyebrow"></div>
+      <h1 id="cfgTitle"></h1>
+      <div class="tagline" id="cfgTagline"></div>
+      <div class="def-line" id="cfgDef"></div>
+    </div>
+    <div class="confidence-badge" id="cfgBadge"></div>
+  </header>
+
+  <nav class="act-nav" id="actNav"></nav>
+
+  <div id="actPanels"></div>
+
+  <div class="footer-nav">
+    <button class="nav-arrow" onclick="stepAct(-1)">&larr; Previous Act</button>
+    <button class="nav-arrow" onclick="stepAct(1)">Next Act &rarr;</button>
+  </div>
+
+  <footer class="site-foot">
+    <div class="cta"><span id="cfgCtaLabel"></span> <a id="cfgCtaBtn" class="cta-btn" target="_blank" rel="noopener"></a></div>
+    <div class="disc" id="cfgDisc"></div>
+    <div class="attr" id="cfgAttr"></div>
+  </footer>
+</div>
+
+<script type="application/json" id="demo-config">{"_readme": "Edit this one file to make the demo yours. Run: python3 build.py -> writes demo.html. Text lives under 'story' and 'numbers'; chart series under 'series'.", "brand": {"title_a": "Stochastic", "title_b": "SPM", "title_rest": "AI Portfolio Intelligence", "eyebrow": "Live Walkthrough · Simulated Environment", "tagline": "From administrative tracking to statistical rigor. A 5-act narrative demo of an AI-enabled EPMO, built on the 7 Pillars framework.", "definition_term": "stochastic", "definition": "governed by probability, not fixed rules. The opposite of a guess.", "confidence_badge": "Model confidence: 94.2%"}, "cta": {"label": "Want help applying this to your own portfolio?", "button": "Book a 20-minute walkthrough", "url": "https://bookings.cloud.microsoft/bookwithme/user/dcceec89368b4eaaa3b2558d75329dc2@level5iveconsulting.com/meetingtype/u9JHaejWVk6c7OBoClRCmA2?anonymous&ismsaljsauthenabled&ep=mcard"}, "footer": {"attribution": "Built with the Stochastic SPM Demo Kit by Level 5ive Consulting · Code MIT · Framework content CC BY 4.0", "disclaimer": "Illustrative data. Every number, name and chart in this walkthrough is simulated; no real product or client is shown."}, "acts": [{"id": "a1", "num": "ACT I", "title": "The Leader's Anxiety", "time": "0:05–0:10"}, {"id": "a2", "num": "ACT II", "title": "The Operator's Grind", "time": "0:10–0:16"}, {"id": "a3", "num": "ACT III", "title": "The Hero Moment", "time": "0:16–0:44"}, {"id": "a4", "num": "ACT IV", "title": "The Value Hypothesis", "time": "0:44–0:52"}, {"id": "a5", "num": "ACT V", "title": "The Outcome Realized", "time": "0:52–0:58"}], "tracker": {"title": "Q3 Portfolio Status — Master Tracker.xlsx", "stale_tag": "Last saved 11 days ago", "sub": "Manually maintained by the PMO. Colors set by gut feel, not by any control limit.", "initiatives": [{"name": "Core Billing Re-platform", "owner": "J. Alvarez", "rag": "g", "budget": "$4.2M", "pct": "61%", "note": "\"on track\" (as of 2 wks ago)", "strike": true}, {"name": "Customer Data Unification", "owner": "R. Chen", "rag": "y", "budget": "$2.8M", "pct": "44%", "note": "Waiting on infra team?"}, {"name": "Regional Expansion – LATAM", "owner": "M. Osei", "rag": "g", "budget": "$6.1M", "pct": "38%", "note": "Owner disputes this %"}, {"name": "Fraud Detection ML Pipeline", "owner": "S. Novak", "rag": "r", "budget": "$1.9M", "pct": "29%", "note": "Escalated in email, not here"}, {"name": "Legacy CRM Sunset", "owner": "T. Brooks", "rag": "y", "budget": "$3.0M", "pct": "52%", "note": "No update this cycle"}]}, "story": {"a1": {"heading": "The Leader's Anxiety", "intro": "Before the platform: a portfolio view stitched together from five spreadsheets, updated weekly by hand. Nobody in the room fully trusts what's on screen.", "quote": "\"Is this number from Tuesday or from three weeks ago? Are we actually behind, or does it just look that way?\"", "stats": [{"num": "62%", "label": "Initiatives with a manually-set RAG status (no underlying data model)"}, {"num": "11 days", "label": "Average staleness of the \"current\" portfolio report"}, {"num": "3", "label": "Conflicting versions of \"the numbers\" in this week's steering deck"}]}, "a2": {"heading": "The Operator's Grind", "intro": "The PMO analyst who owns this file spends most of her week chasing status, not analyzing it. Here's where the hours actually go.", "quote": "\"I don't have time to think about the portfolio. I'm too busy building the slide that describes it.\"", "tasks": [{"task": "Chase 14 project owners for status updates", "hrs": "6.5 hrs"}, {"task": "Reconcile 3 conflicting budget spreadsheets", "hrs": "4.0 hrs"}, {"task": "Rebuild steering committee deck from scratch", "hrs": "7.0 hrs"}, {"task": "Manually recolor RAG statuses per opinion", "hrs": "2.5 hrs"}, {"task": "Re-key resourcing data from 4 team calendars", "hrs": "5.0 hrs"}, {"task": "Answer \"can you pull that number again?\"", "hrs": "3.5 hrs"}], "left_label": "Time left for actual portfolio judgment", "left_hrs": "3.5 hrs", "reporting_pct": "87.5%", "judgment_pct": "12.5%", "deck_title": "Where a 40-hour week actually goes"}, "a3": {"heading": "The Hero Moment", "intro": "Same portfolio. Same data sources. Now run through the Stochastic SPM engine — insight replaces manual assembly, and every number carries a confidence interval instead of an opinion.", "quote": ""}, "a4": {"heading": "The Value Hypothesis", "intro": "With the system doing the assembly work, value becomes visible and arguable in numbers instead of anecdotes.", "quote": "", "stats": [{"num": "6.2&times;", "label": "Faster steering-committee decision cycle"}, {"num": "91%", "label": "Of RAG statuses now backed by a statistical model, not an opinion"}, {"num": "31.5 hrs", "label": "Analyst hours per week returned to actual portfolio judgment"}]}, "a5": {"heading": "The Outcome Realized", "intro": "Two quarters later. The anxiety that opened this story has a measurable answer.", "quote": "\"I stopped asking whether the number was real. Now I ask what we're going to do about it.\" — the same leader from Act I.", "scorecard": [{"label": "Portfolio ROI documented", "value": "$5.8M", "note": "confirmed"}, {"label": "Forecast accuracy (EAC vs. actual)", "value": "±4.2%", "note": "was ±22%"}, {"label": "Initiatives caught by early-warning before RAG flip", "value": "9", "note": "of 11 red events"}, {"label": "Executive trust survey score", "value": "8.7/10", "note": "was 4.1/10"}], "deck_cards": [{"value": "$5.8M", "label": "Documented portfolio ROI"}, {"value": "±4.2%", "label": "Forecast accuracy — was ±22%"}, {"value": "9 of 11", "label": "Red events caught before RAG flip"}, {"value": "8.7 / 10", "label": "Executive trust score — was 4.1"}]}}, "numbers": {"drift1": 0.71, "drift1_pct": 34, "drift2": 0.58, "util": 84, "wait_from": 3.1, "wait_to": 11.4, "p_sep30": 85, "p_aug15": 22, "nudge_pct": 32, "npv": "$2.4M", "npv_ci": "$1.7M–$3.0M", "irr": "18.6%", "irr_ci": "14.1%–22.9%", "exposure": "$410K", "protected": "$1.2M", "retention_lift": 4.1}, "series": {"time_alloc": {"labels": ["Chasing status updates", "Rebuilding reports/decks", "Reconciling spreadsheets", "Actual analysis & judgment"], "hours": [6.5, 7.0, 9.0, 3.5]}, "velocity": {"labels": ["Risk identified → surfaced", "Surfaced → leadership review", "Review → decision made"], "before": [9, 6, 4], "after": [0.4, 0.8, 1.1]}, "adoption": {"labels": ["Wk 1", "Wk 4", "Wk 8", "Wk 12", "Wk 16", "Wk 20", "Wk 24"], "users": [22, 38, 51, 64, 73, 81, 88]}, "spc": {"velocity": [41, 44, 39, 43, 40, 45, 42, 38, 41, 44, 46, 52, 43, 40], "ucl": 48, "lcl": 36}, "adoption_gap": {"labels": ["On-time delivery rate (%)", "Forecast accuracy (%)", "Time reclaimed for judgment (% of week)"], "high": [88, 94, 41], "low": [61, 71, 12]}, "bias": {"pms": ["J. Alvarez", "R. Chen", "M. Osei", "S. Novak", "T. Brooks"], "variance": [8, 14, 11, 6, 32]}, "causal": {"labels": ["Q1", "Q2", "Q3 (launch)", "Q4", "Q5"], "treated": [71, 72, 73, 76, 79], "control": [71, 72, 72.5, 73, 73.5]}, "eac": {"low": [4.0, 4.1, 4.15, 4.2, 4.22, 4.24, 4.25, 4.26], "high": [4.6, 4.55, 4.5, 4.42, 4.38, 4.34, 4.31, 4.29], "median": [4.3, 4.32, 4.31, 4.3, 4.29, 4.28, 4.27, 4.27]}, "completion_curve": {"labels": ["Jul 15", "Aug 1", "Aug 15", "Sep 1", "Sep 15", "Sep 30", "Oct 15"], "p": [2, 8, 22, 41, 63, 85, 95]}}, "deck": {"footer_note": "Illustrative data. Simulated environment."}}</script>
+<script>
+/* ============================================================
+   DATA
+============================================================ */
+const CFG = JSON.parse(document.getElementById('demo-config').textContent);
+const ACTS = CFG.acts;
+const S = CFG.story, N = CFG.numbers;
+
+const PILLARS = [
+  {n:'01', short:'Strategic\u00A0Allocation', full:'Portfolio Value & Strategic Allocation'},
+  {n:'02', short:'Capacity\u00A0&\u00A0Queuing', full:'Stochastic Capacity & Resource Planning'},
+  {n:'03', short:'Delivery\u00A0Risk', full:'Risk Management & Predictive Delivery'},
+  {n:'04', short:'SPC\u00A0Control', full:'Operational Metrics via SPC'},
+  {n:'05', short:'Talent\u00A0Elevation', full:'Talent Elevation & Maturity Management'},
+  {n:'06', short:'Financial\u00A0Precision', full:'Financial Precision (ROI/ETC/NPV)'},
+  {n:'07', short:'Outcome\u00A0Twin', full:'Direct Business Outcome & Value Realization'},
+];
+
+let currentAct = 0;
+let currentPillar = 0;
+
+/* ============================================================
+   NAV RENDER
+============================================================ */
+function renderActNav(){
+  const nav = document.getElementById('actNav');
+  nav.innerHTML = ACTS.map((a,i)=>`
+    <div class="act-btn ${i===currentAct?'active':''}" onclick="goAct(${i})">
+      <div class="act-num">${a.num}</div>
+      <div class="act-title">${a.title}</div>
+      <div class="act-time">${a.time}</div>
+    </div>`).join('');
+}
+
+function goAct(i){
+  currentAct = i;
+  renderActNav();
+  document.querySelectorAll('.act-panel').forEach((p,idx)=>{
+    p.classList.toggle('active', idx===i);
+  });
+  // (re)draw charts for the act coming into view
+  requestAnimationFrame(()=>drawChartsForAct(ACTS[i].id));
+}
+function stepAct(dir){
+  let n = currentAct + dir;
+  if(n<0) n=0; if(n>ACTS.length-1) n=ACTS.length-1;
+  goAct(n);
+}
+
+/* ============================================================
+   ACT 1 — LEADER'S ANXIETY
+============================================================ */
+const act1HTML = `
+  <div class="act-head">
+    <div>
+      <h2>${S.a1.heading}</h2>
+      <p>${S.a1.intro}</p>
+      <div class="act-quote">${S.a1.quote}</div>
+    </div>
+  </div>
+  <div class="grid grid-3" style="margin-bottom:16px;">
+    <div class="card stat down"><div class="num">${S.a1.stats[0].num}</div><div class="label">${S.a1.stats[0].label}</div></div>
+    <div class="card stat down"><div class="num">${S.a1.stats[1].num}</div><div class="label">${S.a1.stats[1].label}</div></div>
+    <div class="card stat down"><div class="num">${S.a1.stats[2].num}</div><div class="label">${S.a1.stats[2].label}</div></div>
+  </div>
+  <div class="card">
+    <h3>${CFG.tracker.title} <span class="tag tag-red">${CFG.tracker.stale_tag}</span></h3>
+    <div class="sub">${CFG.tracker.sub}</div>
+    <table class="mock">
+      <tr><th>Initiative</th><th>Owner</th><th>RAG</th><th>Budget</th><th>% Complete</th><th>Note</th></tr>
+${CFG.tracker.initiatives.map(r=>`<tr><td>${r.name}</td><td>${r.owner}</td><td><span class="flag ${r.rag}"></span> ${{g:'Green',y:'Yellow',r:'Red'}[r.rag]}</td><td>${r.budget}</td><td>${r.pct}</td><td${r.strike?' class="strike"':''}>${r.note}</td></tr>`).join('')}
+    </table>
+  </div>
+`;
+
+/* ============================================================
+   ACT 2 — OPERATOR'S GRIND
+============================================================ */
+const act2HTML = `
+  <div class="act-head">
+    <div>
+      <h2>${S.a2.heading}</h2>
+      <p>${S.a2.intro}</p>
+      <div class="act-quote">${S.a2.quote}</div>
+    </div>
+  </div>
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Where a 40-hour week actually goes</h3>
+      <div class="sub">Self-reported time allocation, PMO analyst, current state</div>
+      <canvas id="chartTimeAlloc"></canvas>
+    </div>
+    <div class="card">
+      <h3>This week's manual task queue</h3>
+      <div class="sub">Every line is a person, not a system, doing the work</div>
+      <ul class="tasklist">
+        ${S.a2.tasks.map(t=>`<li>${t.task} <span class="hrs">${t.hrs}</span></li>`).join('')}
+        <li><b>${S.a2.left_label}</b> <span class="hrs" style="color:var(--teal)">${S.a2.left_hrs}</span></li>
+      </ul>
+    </div>
+  </div>
+`;
+
+/* ============================================================
+   ACT 3 — HERO MOMENT (7 pillars)
+============================================================ */
+function pillarNavHTML(){
+  return `<div class="pillar-nav">` + PILLARS.map((p,i)=>`
+    <div class="pillar-btn ${i===0?'active':''}" data-pillar="${i}" onclick="goPillar(${i})">
+      <div class="pnum">P${p.n}</div>
+      <div class="pname">${p.short}</div>
+    </div>`).join('') + `</div>`;
+}
+
+const act3HTML = `
+  <div class="act-head">
+    <div>
+      <h2>${S.a3.heading}</h2>
+      <p>${S.a3.intro}</p>
+    </div>
+  </div>
+  ${pillarNavHTML()}
+  <div id="pillarPanels"></div>
+`;
+
+function pillarPanel(idx){
+  const templates = [
+  // P1 Strategic Allocation
+  `<div class="grid grid-2">
+    <div class="card">
+      <h3>Strategic Drift Detection <span class="tag tag-amber">NLP</span></h3>
+      <div class="sub">Charters & backlog epics parsed against strategy metadata, nightly</div>
+      <div class="callout" style="margin-bottom:10px;"><b>⚠ Regional Expansion – LATAM</b> — ${N.drift1_pct}% of open epics reference "cost containment," not "market entry." Drift score ${N.drift1}.</div>
+      <div class="callout"><b>⚠ Legacy CRM Sunset</b> — Charter language hasn't referenced a strategic pillar in 2 planning cycles. Drift score ${N.drift2}.</div>
+    </div>
+    <div class="card">
+      <h3>Capital Concentration — Cluster Analysis</h3>
+      <div class="sub">Latent correlation structure across the active portfolio</div>
+      <canvas id="chartCluster"></canvas>
+      <div class="legend-row"><span><i style="background:var(--teal)"></i>Cloud infra dependency cluster</span><span><i style="background:var(--violet)"></i>3rd-party vendor cluster</span></div>
+    </div>
+  </div>`,
+  // P2 Capacity & Queuing
+  `<div class="grid grid-2">
+    <div class="card">
+      <h3>Erlang Bottleneck Model</h3>
+      <div class="sub">Real-time wait time as a function of team utilization</div>
+      <canvas id="chartErlang"></canvas>
+    </div>
+    <div class="card">
+      <h3>Predictive Overload Alert <span class="tag tag-red">Threshold breached</span></h3>
+      <div class="sub">Platform Engineering — arrival rate vs. service capacity</div>
+      <div class="callout" style="margin-bottom:10px;">Utilization crossed <b>${N.util}%</b> on Jun 22. Historical pattern: lead times begin compounding non-linearly above 80%.</div>
+      <div class="callout"><b>Forecast:</b> at current intake, expected queue wait grows from ${N.wait_from} days to <b>${N.wait_to} days</b> within 3 sprints without intervention.</div>
+    </div>
+  </div>`,
+  // P3 Delivery Risk
+  `<div class="grid grid-2">
+    <div class="card">
+      <h3>Monte Carlo Delivery Simulation</h3>
+      <div class="sub">10,000 simulated paths — Fraud Detection ML Pipeline</div>
+      <canvas id="chartMonteCarlo"></canvas>
+    </div>
+    <div class="card">
+      <h3>Completion Probability Curve</h3>
+      <div class="sub">P(Completion &le; Date)</div>
+      <canvas id="chartSCurve"></canvas>
+      <div class="callout" style="margin-top:10px;">P(Completion &le; Sep 30) = <b>${N.p_sep30}%</b>. P(Completion &le; Aug 15) = <b>${N.p_aug15}%</b> — the date currently in the steering deck.</div>
+    </div>
+  </div>`,
+  // P4 SPC
+  `<div class="grid grid-2">
+    <div class="card" style="grid-column:1/-1;">
+      <h3>Statistical Process Control — Engineering Velocity <span class="tag tag-teal">Graduation from reporting</span></h3>
+      <div class="sub">UCL/LCL computed from historical process variation, not from opinion</div>
+      <div class="callout" style="margin-bottom:12px;"><b>Reporting tells you a number changed. SPC tells you whether that change means anything.</b> The Act II grind — chasing status, rebuilding decks, recoloring RAG by feel — was all in service of producing a number. This is what replaces the number with a boundary: a statistically defined range of normal, computed from the process's own history, not from someone's judgment call under deadline pressure.</div>
+      <canvas id="chartSPC" style="max-height:260px;"></canvas>
+      <div class="legend-row"><span><i style="background:var(--teal)"></i>Velocity</span><span><i style="background:var(--red)"></i>UCL / LCL</span><span><i style="background:var(--amber)"></i>Special cause point</span></div>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:12px;">Only the point flagged in amber breaches the control limit — that's the one worth a leadership conversation. Everything else is common-cause noise the system now filters out automatically. No one had to report on it for that to be true.</div>`,
+  // P5 Talent
+  `<div class="grid grid-2">
+    <div class="card" style="grid-column:1/-1;">
+      <h3>Productivity by AI Adoption Level <span class="tag tag-teal">Elevation, not surveillance</span></h3>
+      <div class="sub">Same PMO, same portfolio — grouped by how fully each PM has adopted the AI-assisted workflow</div>
+      <canvas id="chartAdoptionGap" style="max-height:230px;"></canvas>
+      <div class="legend-row"><span><i style="background:var(--teal)"></i>High AI adoption</span><span><i style="background:#B8C0D0"></i>Low / no AI adoption</span></div>
+    </div>
+  </div>
+  <div class="grid grid-2" style="margin-top:16px;">
+    <div class="card">
+      <h3>Estimation Error Variance by PM</h3>
+      <div class="sub">Lower variance tracks with active use of the AI guardrails, not tenure</div>
+      <canvas id="chartBias"></canvas>
+    </div>
+    <div class="card">
+      <h3>Contextual Guardrail — live nudge</h3>
+      <div class="sub">Surfaced to T. Brooks, the team's lowest-adoption PM, while drafting the CRM Sunset requirements doc</div>
+      <div class="callout">Your validation-phase estimates have run <b>${N.nudge_pct}% short</b> on average across your last 6 initiatives. Consider adding 2.5 buffer days here before this goes to steering. PMs who accept nudges like this consistently close the gap within two quarters — this is elevation, before it even shows up in the productivity numbers.</div>
+    </div>
+  </div>`,
+  // P6 Financial
+  `<div class="grid grid-2">
+    <div class="card">
+      <h3>Bayesian EAC / ETC Forecast</h3>
+      <div class="sub">ARIMA + Bayesian updating as new actuals roll in</div>
+      <canvas id="chartEAC"></canvas>
+    </div>
+    <div class="card">
+      <h3>Dynamic NPV / IRR</h3>
+      <div class="sub">Continuous confidence interval — Core Billing Re-platform</div>
+      <div class="grid grid-2" style="gap:10px;">
+        <div class="stat up"><div class="num">${N.npv}</div><div class="label">NPV (90% CI: ${N.npv_ci})</div></div>
+        <div class="stat up"><div class="num">${N.irr}</div><div class="label">IRR (90% CI: ${N.irr_ci})</div></div>
+      </div>
+      <div class="callout" style="margin-top:12px;">Expected value dipped within 4pts of the governance trigger threshold last month — the workflow fired automatically, no one had to notice manually.</div>
+    </div>
+  </div>`,
+  // P7 Outcome
+  `<div class="grid grid-2">
+    <div class="card">
+      <h3>Outcome Digital Twin</h3>
+      <div class="sub">Execution dependency mapped to downstream OKR / revenue impact</div>
+      <div class="callout" style="margin-bottom:10px;"><b>Fraud Detection ML Pipeline</b> delay of 3 weeks → <b>${N.exposure}</b> projected Q4 fraud-loss exposure, tied directly to the "Reduce chargeback rate" OKR.</div>
+      <div class="callout"><b>Core Billing Re-platform</b> on current trajectory → protects <b>${N.protected}</b> in projected churn-reduction value this fiscal year.</div>
+    </div>
+    <div class="card">
+      <h3>Causal Inference — Did the initiative actually work?</h3>
+      <div class="sub">Synthetic control vs. treated cohort, retention %</div>
+      <canvas id="chartCausal"></canvas>
+      <div class="callout" style="margin-top:10px;">Divergence from the synthetic control isolates a <b>+${N.retention_lift}pt</b> retention lift attributable to the initiative — not general market movement.</div>
+    </div>
+  </div>`
+  ];
+  return `<div class="pillar-panel active">
+    <div class="card" style="margin-bottom:14px; background:transparent; border:none; padding:0 0 4px;">
+      <h3 style="font-size:14px;">Pillar ${PILLARS[idx].n} — ${PILLARS[idx].full}</h3>
+    </div>
+    ${templates[idx]}
+  </div>`;
+}
+
+function goPillar(i){
+  currentPillar = i;
+  document.querySelectorAll('.pillar-btn').forEach((b,idx)=>b.classList.toggle('active', idx===i));
+  document.getElementById('pillarPanels').innerHTML = pillarPanel(i);
+  requestAnimationFrame(()=>drawPillarChart(i));
+}
+
+/* ============================================================
+   ACT 4 — VALUE HYPOTHESIS
+============================================================ */
+const act4HTML = `
+  <div class="act-head">
+    <div>
+      <h2>${S.a4.heading}</h2>
+      <p>${S.a4.intro}</p>
+    </div>
+  </div>
+  <div class="grid grid-3" style="margin-bottom:16px;">
+    <div class="card stat up"><div class="num">${S.a4.stats[0].num}</div><div class="label">${S.a4.stats[0].label}</div></div>
+    <div class="card stat up"><div class="num">${S.a4.stats[1].num}</div><div class="label">${S.a4.stats[1].label}</div></div>
+    <div class="card stat up"><div class="num">${S.a4.stats[2].num}</div><div class="label">${S.a4.stats[2].label}</div></div>
+  </div>
+  <div class="card">
+    <h3>Decision Velocity — Before vs. After</h3>
+    <div class="sub">Days from "risk emerges" to "leadership acts on it"</div>
+    <canvas id="chartVelocity"></canvas>
+  </div>
+`;
+
+/* ============================================================
+   ACT 5 — OUTCOME REALIZED
+============================================================ */
+const act5HTML = `
+  <div class="act-head">
+    <div>
+      <h2>${S.a5.heading}</h2>
+      <p>${S.a5.intro}</p>
+    </div>
+  </div>
+  <div class="grid grid-2" style="margin-bottom:16px;">
+    <div class="card">
+      <h3>Adoption</h3>
+      <canvas id="chartAdoption"></canvas>
+    </div>
+    <div class="card">
+      <h3>Program Scorecard</h3>
+      <div class="sub">Two quarters post-rollout</div>
+      <ul class="tasklist">
+        ${S.a5.scorecard.map(r=>`<li>${r.label} <b>${r.value}</b> <span class="hrs" style="color:var(--teal)">${r.note}</span></li>`).join('')}
+      </ul>
+    </div>
+  </div>
+  <div class="callout" style="font-size:13px;">${S.a5.quote}</div>
+`;
+
+/* ============================================================
+   MOUNT ACT PANELS
+============================================================ */
+function mountActs(){
+  const html = ACTS.map((a,i)=>{
+    let body = '';
+    if(a.id==='a1') body = act1HTML;
+    if(a.id==='a2') body = act2HTML;
+    if(a.id==='a3') body = act3HTML;
+    if(a.id==='a4') body = act4HTML;
+    if(a.id==='a5') body = act5HTML;
+    return `<div class="act-panel ${i===0?'active':''}" id="panel-${a.id}">${body}</div>`;
+  }).join('');
+  document.getElementById('actPanels').innerHTML = html;
+}
+
+/* ============================================================
+   CHARTS
+============================================================ */
+if(typeof Chart !== 'undefined'){
+  Chart.defaults.color = '#5A6C8F';
+  Chart.defaults.font.family = "'IBM Plex Mono','Manrope',monospace";
+  Chart.defaults.font.size = 10;
+  Chart.defaults.borderColor = '#E1E6EF';
+}
+
+function baseGrid(){ return { grid:{color:'#EAEDF4'}, ticks:{color:'#5A6C8F'} }; }
+
+function drawChartsForAct(actId){
+  if(actId==='a2') drawTimeAlloc();
+  if(actId==='a3') drawPillarChart(currentPillar);
+  if(actId==='a4') drawVelocity();
+  if(actId==='a5') drawAdoption();
+}
+
+function safeNewChart(ctx, cfg){
+  if(typeof Chart === 'undefined' || !ctx) return null;
+  return new Chart(ctx, cfg);
+}
+
+function killChart(id){
+  if(typeof Chart === 'undefined') return;
+  const c = Chart.getChart(id);
+  if(c) c.destroy();
+}
+
+function drawTimeAlloc(){
+  const ctx = document.getElementById('chartTimeAlloc'); if(!ctx) return;
+  killChart('chartTimeAlloc');
+  safeNewChart(ctx, {
+    type:'doughnut',
+    data:{ labels:CFG.series.time_alloc.labels,
+      datasets:[{ data:CFG.series.time_alloc.hours, backgroundColor:['#C13A3E','#C97F0A','#5B4FC4','#0F8577'], borderColor:'#FFFFFF', borderWidth:3 }] },
+    options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:8, font:{size:10.5}}}}, cutout:'62%' }
+  });
+}
+
+function drawPillarChart(i){
+  killChart('chartCluster'); killChart('chartErlang'); killChart('chartMonteCarlo'); killChart('chartSCurve');
+  killChart('chartSPC'); killChart('chartBias'); killChart('chartEAC'); killChart('chartCausal'); killChart('chartAdoptionGap');
+
+  if(i===0){
+    const ctx = document.getElementById('chartCluster'); if(!ctx) return;
+    safeNewChart(ctx, { type:'bubble', data:{ datasets:[
+      {label:'Cloud infra cluster', backgroundColor:'rgba(0,194,168,.6)', data:[{x:20,y:30,r:14},{x:28,y:35,r:10},{x:22,y:42,r:8},{x:35,y:28,r:6}]},
+      {label:'3rd-party vendor cluster', backgroundColor:'rgba(139,124,246,.6)', data:[{x:60,y:65,r:12},{x:70,y:60,r:9},{x:65,y:72,r:7}]},
+      {label:'Uncorrelated', backgroundColor:'rgba(143,160,192,.4)', data:[{x:45,y:15,r:5},{x:80,y:20,r:5}]}
+    ]}, options:{ plugins:{legend:{display:false}}, scales:{ x:{...baseGrid(), title:{display:true,text:'Strategic pillar spend',color:'#5A6C8F'}}, y:{...baseGrid(), title:{display:true,text:'Delivery risk exposure',color:'#5A6C8F'}} } } });
+  }
+  if(i===1){
+    const ctx = document.getElementById('chartErlang'); if(!ctx) return;
+    const util = [50,55,60,65,70,75,80,84,88,92];
+    const wait = [1.1,1.3,1.6,1.9,2.4,3.1,4.5,7.2,11.4,18.9];
+    safeNewChart(ctx, { type:'line', data:{ labels:util.map(u=>u+'%'), datasets:[{ label:'Expected wait (days)', data:wait, borderColor:'#C97F0A', backgroundColor:'rgba(201,127,10,.12)', fill:true, tension:.35, pointRadius:2 }] },
+      options:{ plugins:{legend:{display:false}}, scales:{ x:{...baseGrid(), title:{display:true,text:'Team utilization',color:'#5A6C8F'}}, y:baseGrid() } } });
+  }
+  if(i===2){
+    const ctx = document.getElementById('chartMonteCarlo'); if(!ctx) return;
+    const labels = ['Jul','Aug','Sep','Oct','Nov'];
+    safeNewChart(ctx, { type:'line', data:{ labels, datasets:[
+      { label:'P10', data:[10,25,45,60,70], borderColor:'transparent', backgroundColor:'rgba(15,133,119,.07)', fill:'+1', pointRadius:0 },
+      { label:'P90', data:[30,55,80,92,98], borderColor:'transparent', backgroundColor:'rgba(15,133,119,.07)', fill:false, pointRadius:0 },
+      { label:'Median path', data:[18,38,62,78,88], borderColor:'#0F8577', backgroundColor:'transparent', tension:.3, pointRadius:2 }
+    ]}, options:{ plugins:{legend:{display:false}}, scales:{ x:baseGrid(), y:{...baseGrid(), title:{display:true,text:'% complete',color:'#5A6C8F'}} } } });
+
+    const ctx2 = document.getElementById('chartSCurve'); if(!ctx2) return;
+    const labels2 = CFG.series.completion_curve.labels;
+    safeNewChart(ctx2, { type:'line', data:{ labels:labels2, datasets:[{ label:'P(Completion ≤ Date)', data:CFG.series.completion_curve.p, borderColor:'#5B4FC4', backgroundColor:'rgba(91,79,196,.10)', fill:true, tension:.35, pointRadius:2 }] },
+      options:{ plugins:{legend:{display:false}}, scales:{ x:baseGrid(), y:{...baseGrid(), min:0, max:100} } } });
+  }
+  if(i===3){
+    const ctx = document.getElementById('chartSPC'); if(!ctx) return;
+    const labels = Array.from({length:CFG.series.spc.velocity.length},(_,k)=>'Sp'+(k+1));
+    const velocity = CFG.series.spc.velocity;
+    safeNewChart(ctx, { type:'line', data:{ labels, datasets:[
+      { label:'Velocity', data:velocity, borderColor:'#0F8577', backgroundColor:'transparent', tension:.25, pointRadius:(ctx)=> velocity[ctx.dataIndex]>CFG.series.spc.ucl?5:2, pointBackgroundColor:(ctx)=> velocity[ctx.dataIndex]>CFG.series.spc.ucl?'#C97F0A':'#0F8577' },
+      { label:'UCL', data:Array(velocity.length).fill(CFG.series.spc.ucl), borderColor:'#C13A3E', borderDash:[5,4], pointRadius:0 },
+      { label:'LCL', data:Array(velocity.length).fill(CFG.series.spc.lcl), borderColor:'#C13A3E', borderDash:[5,4], pointRadius:0 }
+    ]}, options:{ plugins:{legend:{display:false}}, scales:{x:baseGrid(), y:baseGrid()} } });
+  }
+  if(i===4){
+    const ctx0 = document.getElementById('chartAdoptionGap'); if(!ctx0) return;
+    safeNewChart(ctx0, { type:'bar', data:{
+      labels:CFG.series.adoption_gap.labels,
+      datasets:[
+        { label:'High AI adoption', data:CFG.series.adoption_gap.high, backgroundColor:'#0F8577', borderRadius:4 },
+        { label:'Low / no AI adoption', data:CFG.series.adoption_gap.low, backgroundColor:'#B8C0D0', borderRadius:4 }
+      ]}, options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{...baseGrid(), max:100}, y:baseGrid()} } });
+
+    const ctx = document.getElementById('chartBias'); if(!ctx) return;
+    safeNewChart(ctx, { type:'bar', data:{ labels:CFG.series.bias.pms, datasets:[{ label:'Estimation error variance', data:CFG.series.bias.variance, backgroundColor:(ctx)=> ctx.raw>25?'#C97F0A':'#0F8577', borderRadius:4 }] },
+      options:{ plugins:{legend:{display:false}}, scales:{x:baseGrid(), y:{...baseGrid(), title:{display:true,text:'% variance from actual',color:'#5A6C8F'}}} } });
+  }
+  if(i===5){
+    const ctx = document.getElementById('chartEAC'); if(!ctx) return;
+    const labels=['Sprint 1','2','3','4','5','6','7','8'];
+    safeNewChart(ctx, { type:'line', data:{ labels, datasets:[
+      { label:'EAC low', data:CFG.series.eac.low, borderColor:'transparent', backgroundColor:'rgba(15,133,119,.07)', fill:'+1', pointRadius:0 },
+      { label:'EAC high', data:CFG.series.eac.high, borderColor:'transparent', backgroundColor:'rgba(15,133,119,.07)', fill:false, pointRadius:0 },
+      { label:'EAC (median, $M)', data:CFG.series.eac.median, borderColor:'#0F8577', tension:.3, pointRadius:2 }
+    ]}, options:{ plugins:{legend:{display:false}}, scales:{x:baseGrid(), y:baseGrid()} } });
+  }
+  if(i===6){
+    const ctx = document.getElementById('chartCausal'); if(!ctx) return;
+    const labels=CFG.series.causal.labels;
+    safeNewChart(ctx, { type:'line', data:{ labels, datasets:[
+      { label:'Treated cohort', data:CFG.series.causal.treated, borderColor:'#0F8577', tension:.3, pointRadius:2 },
+      { label:'Synthetic control', data:CFG.series.causal.control, borderColor:'#5A6C8F', borderDash:[5,4], tension:.3, pointRadius:2 }
+    ]}, options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:8,font:{size:10}}}}, scales:{x:baseGrid(), y:baseGrid()} } });
+  }
+}
+
+function drawVelocity(){
+  const ctx = document.getElementById('chartVelocity'); if(!ctx) return;
+  killChart('chartVelocity');
+  safeNewChart(ctx, { type:'bar', data:{ labels:CFG.series.velocity.labels,
+    datasets:[
+      {label:'Before', data:CFG.series.velocity.before, backgroundColor:'#5A6C8F', borderRadius:4},
+      {label:'After', data:CFG.series.velocity.after, backgroundColor:'#0F8577', borderRadius:4}
+    ]}, options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:8,font:{size:10.5}}}}, scales:{x:baseGrid(), y:{...baseGrid(), title:{display:true,text:'Days',color:'#5A6C8F'}}} } });
+}
+
+function drawAdoption(){
+  const ctx = document.getElementById('chartAdoption'); if(!ctx) return;
+  killChart('chartAdoption');
+  safeNewChart(ctx, { type:'line', data:{ labels:CFG.series.adoption.labels, datasets:[{ label:'Active weekly users', data:CFG.series.adoption.users, borderColor:'#0F8577', backgroundColor:'rgba(15,133,119,.10)', fill:true, tension:.35, pointRadius:2 }] },
+    options:{ plugins:{legend:{display:false}}, scales:{ x:baseGrid(), y:{...baseGrid(), min:0, max:100, title:{display:true,text:'% of PMO org',color:'#5A6C8F'}} } } });
+}
+
+/* ============================================================
+   INIT
+============================================================ */
+(function applyConfig(){
+  const b=CFG.brand, $=id=>document.getElementById(id);
+  document.title=b.title_a+' '+b.title_b+' — '+b.title_rest;
+  $('cfgEyebrow').textContent=b.eyebrow;
+  $('cfgTitle').innerHTML=`${b.title_a}<span>${b.title_b}</span> — ${b.title_rest}`;
+  $('cfgTagline').textContent=b.tagline;
+  $('cfgDef').innerHTML=`<b>${b.definition_term}</b> <i>(adj.)</i> — ${b.definition}`;
+  $('cfgBadge').innerHTML='<span class="dot"></span> '+b.confidence_badge;
+  $('cfgCtaLabel').textContent=CFG.cta.label;
+  const a=$('cfgCtaBtn'); a.textContent=CFG.cta.button; a.href=CFG.cta.url;
+  $('cfgDisc').textContent=CFG.footer.disclaimer;
+  $('cfgAttr').textContent=CFG.footer.attribution;
+  const t=document.createElement('div'); t.className='illus-tag'; t.textContent='Illustrative data'; document.body.appendChild(t);
+})();
+renderActNav();
+mountActs();
+window.addEventListener('load', ()=> drawChartsForAct('a1'));
+</script>
+</body>
+</html>
