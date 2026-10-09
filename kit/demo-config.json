@@ -17,7 +17,9 @@
   },
   "footer": {
     "attribution": "Built with the Stochastic SPM Demo Kit by Level 5ive Consulting · Code MIT · Framework content CC BY 4.0",
-    "disclaimer": "Illustrative data. Every number, name and chart in this walkthrough is simulated; no real product or client is shown."
+    "disclaimer": "Illustrative data. Every number, name and chart in this walkthrough is simulated; no real product or client is shown.",
+    "repo_label": "Get the free kit on GitHub",
+    "repo_url": "https://github.com/level5consulting/stochastic-spm-demo"
   },
   "acts": [
     {
