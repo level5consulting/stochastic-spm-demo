@@ -145,14 +145,14 @@
           "hrs": "5.0 hrs"
         },
         {
-          "task": "Answer \"can you pull that number again?\"",
-          "hrs": "3.5 hrs"
+          "task": "Ad hoc requests, incl. \"can you pull that number again?\"",
+          "hrs": "11.5 hrs"
         }
       ],
       "left_label": "Time left for actual portfolio judgment",
       "left_hrs": "3.5 hrs",
-      "reporting_pct": "87.5%",
-      "judgment_pct": "12.5%",
+      "reporting_pct": "91%",
+      "judgment_pct": "9%",
       "deck_title": "Where a 40-hour week actually goes"
     },
     "a3": {
@@ -247,14 +247,16 @@
     "time_alloc": {
       "labels": [
         "Chasing status updates",
-        "Rebuilding reports/decks",
-        "Reconciling spreadsheets",
+        "Rebuilding decks & recoloring RAG",
+        "Reconciling & re-keying data",
+        "Ad hoc requests",
         "Actual analysis & judgment"
       ],
       "hours": [
         6.5,
-        7.0,
+        9.5,
         9.0,
+        11.5,
         3.5
       ]
     },

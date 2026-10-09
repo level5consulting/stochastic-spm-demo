@@ -524,7 +524,7 @@ function drawTimeAlloc(){
   safeNewChart(ctx, {
     type:'doughnut',
     data:{ labels:CFG.series.time_alloc.labels,
-      datasets:[{ data:CFG.series.time_alloc.hours, backgroundColor:['#C13A3E','#C97F0A','#5B4FC4','#0F8577'], borderColor:'#FFFFFF', borderWidth:3 }] },
+      datasets:[{ data:CFG.series.time_alloc.hours, backgroundColor:['#C13A3E','#C97F0A','#5B4FC4','#8A6D3B','#0F8577'], borderColor:'#FFFFFF', borderWidth:3 }] },
     options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:8, font:{size:10.5}}}}, cutout:'62%' }
   });
 }
