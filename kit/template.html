@@ -139,6 +139,8 @@ canvas{max-height:230px;}
 .site-foot{margin-top:28px;padding:18px 0 8px;border-top:1px solid var(--line);text-align:center;color:var(--text-faint);font-size:12px;}
 .site-foot .cta{font-size:13.5px;color:var(--text-dim);margin-bottom:8px;}
 .cta-btn{display:inline-block;margin-left:8px;background:var(--teal);color:#fff;text-decoration:none;padding:6px 14px;border-radius:6px;font-weight:600;}
+.site-foot .repo{margin:6px 0 8px;font-size:13px;}
+.site-foot .repo a{color:var(--teal);font-weight:600;text-decoration:none;border-bottom:1px solid var(--teal);}
 .site-foot .disc{margin-bottom:4px;font-style:italic;}
 .illus-tag{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;background:var(--amber);color:#fff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:999px;z-index:50;opacity:.92;}
 .act-btn.active{background:var(--teal-dim);}
@@ -169,6 +171,7 @@ canvas{max-height:230px;}
   <footer class="site-foot">
     <div class="cta"><span id="cfgCtaLabel"></span> <a id="cfgCtaBtn" class="cta-btn" target="_blank" rel="noopener"></a></div>
     <div class="disc" id="cfgDisc"></div>
+    <div class="repo"><a id="cfgRepo" target="_blank" rel="noopener"></a></div>
     <div class="attr" id="cfgAttr"></div>
   </footer>
 </div>
@@ -636,6 +639,7 @@ function drawAdoption(){
   const a=$('cfgCtaBtn'); a.textContent=CFG.cta.button; a.href=CFG.cta.url;
   $('cfgDisc').textContent=CFG.footer.disclaimer;
   $('cfgAttr').textContent=CFG.footer.attribution;
+  const rp=$('cfgRepo'); if(CFG.footer.repo_url){ rp.href=CFG.footer.repo_url; rp.textContent='★ '+(CFG.footer.repo_label||'View on GitHub'); } else { rp.parentElement.style.display='none'; }
   const t=document.createElement('div'); t.className='illus-tag'; t.textContent='Illustrative data'; document.body.appendChild(t);
 })();
 renderActNav();
