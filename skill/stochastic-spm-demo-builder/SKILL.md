@@ -27,6 +27,7 @@ Then:
 
 - Edit any section of `demo-config.json`. Numbers and chart series live under `numbers` and `series`; text under `story`.
 - Act titles and timings are under `acts`; keep them adding up to the demo length.
+- The presenter script has one source: `script-template.docx`. It feeds the deck's speaker notes, the demo's presenter panel (press P) and `run-of-show.md`. If the user changes numbers in the config, update the matching spoken numbers in that script too.
 - For new slides or layouts, edit `deck-template.pptx` in PowerPoint and use `{{path.to.value}}` placeholders. For script text, edit `script-template.docx` the same way.
 - For new screens or charts, edit `template.html`; read data from the `CFG` object, never hard-code numbers.
 

@@ -19,6 +19,14 @@ python3 build_all.py
 
 You get `demo.html`, `deck.pptx` and `run-of-show.docx` in `kit/`.
 
+## Presenting it
+
+- **Presenter notes on the page:** open the demo and press **P** (or click "Presenter notes"). A side panel shows the script (SAY, DO, WATCH FOR, IF SHORT ON TIME) for the act and pillar you are on. Hidden by default.
+- **Speaker notes in the deck:** every slide in `Stochastic_SPM_Demo_Deck.pptx` carries its part of the script in PowerPoint's notes pane.
+- **Read the full script:** [docs/presenting-the-demo.md](docs/presenting-the-demo.md) (timing, talk track, pillar-by-pillar cues, anticipated questions, and what to do if the live demo fails).
+
+All three come from one source, `kit/script-template.docx`. Edit it in Word, run `python3 build_all.py`, and the notes, deck and Markdown all update.
+
 ## Ready-made files (no build needed)
 
 In `examples/`:

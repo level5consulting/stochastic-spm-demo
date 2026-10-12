@@ -144,6 +144,24 @@ canvas{max-height:230px;}
 .site-foot .disc{margin-bottom:4px;font-style:italic;}
 .illus-tag{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;background:var(--amber);color:#fff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:999px;z-index:50;opacity:.92;}
 .act-btn.active{background:var(--teal-dim);}
+.pn-btn{position:fixed;right:14px;top:14px;z-index:60;background:#fff;border:1px solid var(--line);color:var(--text-dim);font:600 12px var(--mono);padding:6px 12px;border-radius:999px;cursor:pointer;}
+.pn-btn.on{background:var(--teal);color:#fff;border-color:var(--teal);}
+.pn{position:fixed;right:0;top:0;bottom:0;width:min(400px,92vw);background:#fff;border-left:1px solid var(--line);box-shadow:-8px 0 24px rgba(20,30,50,.08);z-index:55;overflow:auto;padding:58px 18px 24px;transform:translateX(105%);transition:transform .22s;}
+.pn.open{transform:none;}
+body.pn-open{padding-right:min(400px,92vw);transition:padding .22s;}
+body.pn-open .illus-tag{left:calc(50% - 200px);}
+.pn h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin:0 0 4px;}
+.pn .pn-time{font:11px var(--mono);color:var(--text-faint);margin-bottom:12px;}
+.pn .it{margin:0 0 12px;font-size:13.5px;line-height:1.5;color:var(--text);}
+.pn .it b{display:block;font:700 10.5px var(--mono);letter-spacing:.1em;margin-bottom:2px;}
+.pn .it.SAY{border-left:3px solid var(--teal);padding-left:10px;}
+.pn .it.SAY b{color:var(--teal);} .pn .it.SAY span{font-style:italic;}
+.pn .it.DO{border-left:3px solid var(--violet);padding-left:10px;} .pn .it.DO b{color:var(--violet);}
+.pn .it.WATCH{border-left:3px solid var(--amber);padding-left:10px;} .pn .it.WATCH b{color:var(--amber);}
+.pn .it.SHORT{border-left:3px solid var(--text-faint);padding-left:10px;} .pn .it.SHORT b{color:var(--text-faint);}
+.pn .hd{font-weight:700;font-size:13px;margin:16px 0 8px;color:var(--text);}
+.pn .hint{font-size:11.5px;color:var(--text-faint);margin-top:14px;}
+@media print{.pn,.pn-btn{display:none}}
 </style>
 </head>
 <body>
@@ -176,6 +194,8 @@ canvas{max-height:230px;}
   </footer>
 </div>
 
+<button class="pn-btn" id="pnBtn" onclick="togglePN()" title="Presenter notes (press P)">Presenter notes</button>
+<aside class="pn" id="pn" aria-label="Presenter notes"></aside>
 <script type="application/json" id="demo-config">__CONFIG__</script>
 <script>
 /* ============================================================
@@ -196,6 +216,37 @@ const PILLARS = [
 ];
 
 let currentAct = 0;
+let pnOpen = false;
+const PN = CFG.presenter || null;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function pnItems(items){
+  return items.map(i=>{
+    if(i.type==='HEAD') return `<div class="hd">${esc(i.text)}</div>`;
+    const cls = i.type==='SAY'?'SAY':i.type==='DO'?'DO':i.type==='WATCH FOR'?'WATCH':i.type==='IF SHORT ON TIME'?'SHORT':'';
+    const label = i.type==='NOTE'?'':`<b>${i.type}</b>`;
+    return `<div class="it ${cls}">${label}<span>${esc(i.text)}</span></div>`;
+  }).join('');
+}
+function renderPN(){
+  const el=document.getElementById('pn'); if(!el||!PN||!pnOpen) return;
+  const a=ACTS[currentAct]; let body='';
+  if(a.id==='a1' && PN.acts.framework) body += '<div class="hd">Before Act I — framework precursor</div>'+pnItems(PN.acts.framework);
+  if(a.id==='a3'){
+    const pl=PN.pillars[String(currentPillar)]||[];
+    body += pnItems((PN.acts.a3||[]).slice(0,(PN.acts.a3||[]).findIndex(i=>i.type==='HEAD')));
+    body += pnItems(pl);
+  } else body += pnItems(PN.acts[a.id]||[]);
+  el.innerHTML=`<h4>${esc(a.num)} - ${esc(a.title)}</h4><div class="pn-time">${esc(a.time)}${a.id==='a3'?' · pillar '+(currentPillar+1)+' of 7':''}</div>${body}<div class="hint">Press P to hide. Notes are the presenter script; the audience never sees them unless you open this panel.</div>`;
+}
+function togglePN(){
+  pnOpen=!pnOpen;
+  document.getElementById('pn').classList.toggle('open',pnOpen);
+  document.getElementById('pnBtn').classList.toggle('on',pnOpen);
+  document.body.classList.toggle('pn-open',pnOpen);
+  setTimeout(()=>window.dispatchEvent(new Event('resize')),260);
+  renderPN();
+}
+document.addEventListener('keydown',e=>{ if((e.key==='p'||e.key==='P') && !e.metaKey && !e.ctrlKey && !/INPUT|TEXTAREA/.test((e.target||{}).tagName||'')) togglePN(); });
 let currentPillar = 0;
 
 /* ============================================================
@@ -214,6 +265,7 @@ function renderActNav(){
 function goAct(i){
   currentAct = i;
   renderActNav();
+  renderPN();
   document.querySelectorAll('.act-panel').forEach((p,idx)=>{
     p.classList.toggle('active', idx===i);
   });
@@ -422,6 +474,7 @@ function pillarPanel(idx){
 
 function goPillar(i){
   currentPillar = i;
+  renderPN();
   document.querySelectorAll('.pillar-btn').forEach((b,idx)=>b.classList.toggle('active', idx===i));
   document.getElementById('pillarPanels').innerHTML = pillarPanel(i);
   requestAnimationFrame(()=>drawPillarChart(i));

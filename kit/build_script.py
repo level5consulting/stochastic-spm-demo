@@ -21,3 +21,9 @@ for t in doc.tables:
         for c in row.cells:
             for p in c.paragraphs: sub(p)
 doc.save(d/'run-of-show.docx'); print('wrote', d/'run-of-show.docx')
+
+# Markdown copy of the script (readable on GitHub). Needs pandoc; skipped quietly if missing.
+import shutil, subprocess
+if shutil.which('pandoc'):
+    subprocess.run(['pandoc', str(d/'run-of-show.docx'), '-t', 'gfm', '--wrap=none', '-o', str(d/'run-of-show.md')], check=True)
+    print('wrote', d/'run-of-show.md')

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Fill deck-template.pptx from demo-config.json -> deck.pptx  (needs: pip install python-pptx)"""
-import json, re, pathlib
+import json, re, pathlib, sys
 from pptx import Presentation
 d = pathlib.Path(__file__).parent
+sys.path.insert(0, str(d))
 cfg = json.loads((d/'demo-config.json').read_text())
 S, ser, ini = cfg['story'], cfg['series'], cfg['tracker']['initiatives']
 b = cfg['brand']
@@ -45,7 +46,11 @@ for s in p.slides:
     for sh in s.shapes:
         if sh.has_text_frame:
             for par in sh.text_frame.paragraphs: fill(par)
-# footer note + attribution on every slide's notes (keeps slide visuals clean)
-for s in p.slides:
-    s.notes_slide.notes_text_frame.text = cfg['footer']['disclaimer'] + ' ' + cfg['footer']['attribution']
+# speaker notes = the run-of-show script for each slide (see script-template.docx), plus the disclaimer
+import script_extract
+sc_slides = script_extract.load(d/'script-template.docx')['slides']
+for n, s in enumerate(p.slides, 1):
+    body = script_extract.as_text(sc_slides.get(n, []))
+    foot = cfg['footer']['disclaimer'] + ' ' + cfg['footer']['attribution']
+    s.notes_slide.notes_text_frame.text = (body + '\n\n' if body else '') + foot
 p.save(d/'deck.pptx'); print('wrote', d/'deck.pptx')
