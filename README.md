@@ -19,6 +19,15 @@ python3 build_all.py
 
 You get `demo.html`, `deck.pptx` and `run-of-show.docx` in `kit/`.
 
+## Ready-made files (no build needed)
+
+In `examples/`:
+- `Stochastic_SPM_Demo_Deck.pptx` - the 12-slide deck the script follows (slide numbers in the script refer to it)
+- `Stochastic_SPM_Run_of_Show.docx` - the full presenter script
+- `demo-config.example.json` - the config that produced them
+
+The interactive demo is `docs/index.html`. Using them as-is gives you the complete 60-minute demo; rebuild from `kit/` when you want your own names, numbers and story.
+
 ## Use it with Claude
 
 Copy `skill/stochastic-spm-demo-builder/` into your Claude skills folder. Then ask: *"Build me an SPM demo for a regional bank."* The skill asks up to four questions and builds all three files for you.
