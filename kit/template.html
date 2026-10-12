@@ -157,6 +157,7 @@ body.pn-open .illus-tag{left:calc(50% - 200px);}
 .pn .it.SAY{border-left:3px solid var(--teal);padding-left:10px;}
 .pn .it.SAY b{color:var(--teal);} .pn .it.SAY span{font-style:italic;}
 .pn .it.DO{border-left:3px solid var(--violet);padding-left:10px;} .pn .it.DO b{color:var(--violet);}
+.pn .it.CLICK{border-left:3px solid #1B2333;padding-left:10px;background:#F3F6FA;border-radius:0 6px 6px 0;padding-top:6px;padding-bottom:6px;} .pn .it.CLICK b{color:#1B2333;}
 .pn .it.WATCH{border-left:3px solid var(--amber);padding-left:10px;} .pn .it.WATCH b{color:var(--amber);}
 .pn .it.SHORT{border-left:3px solid var(--text-faint);padding-left:10px;} .pn .it.SHORT b{color:var(--text-faint);}
 .pn .hd{font-weight:700;font-size:13px;margin:16px 0 8px;color:var(--text);}
@@ -222,7 +223,7 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
 function pnItems(items){
   return items.map(i=>{
     if(i.type==='HEAD') return `<div class="hd">${esc(i.text)}</div>`;
-    const cls = i.type==='SAY'?'SAY':i.type==='DO'?'DO':i.type==='WATCH FOR'?'WATCH':i.type==='IF SHORT ON TIME'?'SHORT':'';
+    const cls = i.type==='SAY'?'SAY':i.type==='DO'?'DO':i.type==='CLICK'?'CLICK':i.type==='WATCH FOR'?'WATCH':i.type==='IF SHORT ON TIME'?'SHORT':'';
     const label = i.type==='NOTE'?'':`<b>${i.type}</b>`;
     return `<div class="it ${cls}">${label}<span>${esc(i.text)}</span></div>`;
   }).join('');

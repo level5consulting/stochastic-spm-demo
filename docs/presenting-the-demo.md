@@ -77,6 +77,8 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 >
 > **DO:** Advance to Slide 6. Point at the Master Tracker mock — let the room read the RAG colors and the stale note before you speak.
 >
+> **CLICK:** (Page version) Click the ACT I tab. Point to: the three red stat cards (62%, 11 days, 3), then the Master Tracker table - the struck-through "on track" note on Core Billing and the red flag on Fraud Detection. Then click Next Act.
+>
 > **SAY:** *“Sixty-two percent of the statuses on a tracker like this are set by feel, not by a model. The 'current' report is, on average, eleven days stale by the time it reaches a steering meeting. And this week, there are three different versions of 'the numbers' floating around before this meeting even starts.”*
 >
 > **WATCH FOR:** *This should land as recognizable, not exaggerated — if the room nods rather than laughs, you've calibrated it correctly. If it feels too on-the-nose for this audience, soften the specific numbers rather than the point.*
@@ -90,6 +92,8 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 > **SAY:** *“Behind that tracker is a person. Let's look at where her week actually goes.”*
 >
 > **DO:** Advance to Slide 8. Let the 91% stat sit for a beat before narrating the task list.
+>
+> **CLICK:** (Page version) Click the ACT II tab. Point to: the doughnut on the left (the small teal slice is the 3.5 hours left for judgment), then read down the task queue on the right to the bold last line.
 >
 > **SAY:** *“Chasing fourteen project owners for updates. Reconciling conflicting budget spreadsheets. Rebuilding the steering deck from scratch, again. Re-keying resourcing data by hand from four different calendars. Then the ad hoc requests — 'can you pull that number again?' Add it up, and ninety-one percent of a forty-hour week goes to manufacturing clarity — not exercising judgment.”*
 >
@@ -105,11 +109,15 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 
 > **DO:** Advance to Slide 9, then switch to the browser tab with the interactive demo. Click into Act III, then click through each pillar tab left to right as you narrate.
 >
+> **CLICK:** Click the ACT III tab (0:16–0:44). The seven pillar tabs run left to right: P01 Strategic Allocation, P02 Capacity & Queuing, P03 Delivery Risk, P04 SPC Control, P05 Talent Elevation, P06 Financial Precision, P07 Outcome Twin. Press P to show or hide this panel.
+>
 > **SAY:** *“Same data sources as what you just saw. Same portfolio. Now run through the Stochastic SPM engine — the same seven pillars from a few minutes ago, this time live.”*
 
 **Pillar 1 — Portfolio Value & Strategic Allocation**
 
 > **DO:** Open the "P01 — Strategic Allocation" tab in the interactive demo.
+>
+> **CLICK:** Click ACT III, then the P01 Strategic Allocation tab. Point to: the two amber drift callouts on the left (LATAM 0.71, Legacy CRM 0.58), then the bubble chart on the right - the teal cloud-infrastructure cluster and the violet vendor cluster.
 >
 > **SAY:** *“This isn't a keyword scan of project summaries. The engine is parsing charter language and backlog epics against our strategy metadata every night, and it's flagging drift before a human would ever notice it — the LATAM expansion initiative is talking about cost containment in a third of its open epics, not market entry.”*
 >
@@ -123,6 +131,8 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 
 > **DO:** Open the "P02 — Capacity & Queuing" tab in the interactive demo.
 >
+> **CLICK:** Click the P02 Capacity & Queuing tab. Point to: the Erlang curve on the left - follow it up to the knee at about 80-84% utilization - then the red "Threshold breached" card on the right: the 84% callout, then the forecast callout (3.1 days to 11.4 days).
+>
 > **SAY:** *“This is queuing theory, not a spreadsheet that flags anyone over forty hours. The model is computing bottleneck probability from arrival rate and team capacity, in real time.”*
 >
 > **SAY:** *“Here's the moment that matters: once Platform Engineering crosses about eighty percent utilization, wait time stops climbing in a straight line and starts compounding. We can see it before it happens — expected queue wait goes from three days to over eleven within three sprints if nothing changes.”*
@@ -132,6 +142,8 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 **Pillar 3 — Risk Management & Predictive Delivery**
 
 > **DO:** Open the "P03 — Delivery Risk" tab in the interactive demo.
+>
+> **CLICK:** Click the P03 Delivery Risk tab. Point to: the Monte Carlo fan on the left (the shaded band is the P10-P90 range, the line is the median path), then the completion curve on the right - first Aug 15 (22%), then Sep 30 (85%) - and finish on the callout under the curve.
 >
 > **SAY:** *“This is ten thousand simulated paths for the Fraud Detection pipeline, run overnight — not one person's gut-feel RAG status.”*
 >
@@ -144,6 +156,8 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 **Pillar 4 — Operational Metrics via Statistical Process Control**
 
 > **DO:** Open the "P04 — SPC Control" tab in the interactive demo.
+>
+> **CLICK:** Click the P04 SPC Control tab. Read the "Reporting tells you a number changed" callout first, then trace the velocity line to the amber point at Sprint 12 above the red UCL. The red dashed lines are the control limits (UCL 48, LCL 36). Finish on the callout at the bottom.
 >
 > **SAY:** *“Remember Act Two — the hours spent chasing status, rebuilding the deck, recoloring RAG by feel? All of that was in service of producing a number. This pillar is the graduation past that. Reporting tells you a number changed. SPC tells you whether that change actually means anything.”*
 >
@@ -158,6 +172,8 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 **Pillar 5 — Talent Elevation & Maturity Management**
 
 > **DO:** Open the "P05 — Talent Elevation" tab in the interactive demo.
+>
+> **CLICK:** Click the P05 Talent Elevation tab. Point to: the adoption-gap bars at the top (teal = high adoption, grey = low), then the estimation-error chart on the lower left - the one amber bar is T. Brooks - and finish on the live nudge callout on the lower right.
 >
 > **SAY:** *“This is the pillar that answers a question every leader in this room is quietly asking: does using this thing actually make someone better at their job? Look at the same PMO, split by how fully each PM has adopted the AI-assisted workflow.”*
 >
@@ -175,6 +191,8 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 
 > **DO:** Open the "P06 — Financial Precision" tab in the interactive demo.
 >
+> **CLICK:** Click the P06 Financial Precision tab. Point to: the EAC band narrowing across the eight sprints on the left, then the NPV (\$2.4M) and IRR (18.6%) tiles with their confidence intervals, and finish on the governance-trigger callout.
+>
 > **SAY:** *“Estimate to Complete used to mean re-running a static formula when someone remembered to update a number. Now it's a continuously updating Bayesian forecast — ARIMA time-series blended with Bayesian inference, recalculating every time new delivery data lands.”*
 >
 > **SAY:** *“And NPV and IRR aren't single point estimates anymore — they carry a confidence interval. When expected value on this initiative drifted within four points of our governance trigger last month, the workflow fired on its own. Nobody had to notice it manually.”*
@@ -184,6 +202,8 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 **Pillar 7 — Direct Business Outcome & Value Realization**
 
 > **DO:** Open the "P07 — Outcome Twin" tab in the interactive demo.
+>
+> **CLICK:** Click the P07 Outcome Twin tab. Point to: the two outcome callouts on the left (\$410K exposure, \$1.2M protected), then the causal chart on the right - the gap between the treated cohort and the synthetic control after the Q3 launch - and finish on the +4.1pt callout.
 >
 > **SAY:** *“This is the pillar that shifts the whole conversation from 'did we ship on time' to 'did it matter.'”*
 >
@@ -203,6 +223,8 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 >
 > **DO:** Advance to Slide 10. Walk the three stat cards left to right, then land on the decision-velocity comparison.
 >
+> **CLICK:** (Page version) Click the ACT IV tab. Point to: the three green stat cards left to right (6.2x, 91%, 31.5 hrs), then the Decision Velocity chart - grey Before bars against teal After bars.
+>
 > **SAY:** *“Decisions that used to take nineteen days from 'a risk emerges' to 'leadership actually acts on it' now take just over two. That's not a productivity story — that's a risk story. Every day shaved off that cycle is a day less of exposure.”*
 >
 > **WATCH FOR:** *This is where the mixed audience tends to split: execs want the velocity number, operators want the 31.5-hours-returned number. Give both explicitly rather than picking one.*
@@ -212,6 +234,8 @@ Objective: move a mixed exec + operator audience from shared anxiety (“can we 
 0:52–0:58 · Slide 11 · Objective: close the loop back to the anxiety named in Act I.
 
 > **DO:** Advance to Slide 11. Read the closing quote slowly — it's designed to land as the answer to the Act I quote.
+>
+> **CLICK:** (Page version) Click the ACT V tab. Point to: the adoption curve on the left, then the Program Scorecard on the right, and read the closing quote at the bottom slowly.
 >
 > **SAY:** *“Two quarters in: \$5.8M in documented ROI, forecast accuracy tightened from plus-or-minus twenty-two percent to plus-or-minus four, and nine of eleven red-flag events caught before they ever became a red status in a steering deck.”*
 >

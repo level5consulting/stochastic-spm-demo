@@ -5,7 +5,7 @@ from docx import Document
 D = pathlib.Path(__file__).parent
 ACT_SLIDE = {'Act I —': 5, 'Act II —': 7, 'Act III —': 9, 'Act IV —': 10, 'Act V —': 11, 'Close': 12}
 ACT_KEY = {'Act I —': 'a1', 'Act II —': 'a2', 'Act III —': 'a3', 'Act IV —': 'a4', 'Act V —': 'a5', 'Close': 'close'}
-CUE = re.compile(r'^(SAY|DO|WATCH FOR|IF SHORT ON TIME):\s*(.*)$', re.S)
+CUE = re.compile(r'^(SAY|DO|CLICK|WATCH FOR|IF SHORT ON TIME):\s*(.*)$', re.S)
 def load(path=None):
     doc = Document(path or D / 'script-template.docx')
     slides, acts, pillars = {}, {}, {}
