@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tributary Demo Room</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single-column demo room - recording first, then the working prototype, slides, files, transcript */
+:root{
+  --bg:#f6f7f5; --surface:#ffffff; --surface-2:#eef2ef; --line:#dde3dd; --fg:#1b2420; --muted:#5b6a63;
+  --accent:#1f6b5c; --accent-ink:#ffffff; --accent-soft:#e1efe9; --warn:#a15c00; --rail:#16302a;
+  --f-display:"Source Serif 4",Cambria,Georgia,serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111816; --surface:#18211e; --surface-2:#1f2a26; --line:#2c3833; --fg:#e4ebe7; --muted:#9aa9a2;
+  --accent:#5fb8a2; --accent-ink:#0d1714; --accent-soft:#1d3530; --warn:#e8a64a; --rail:#0b1311; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111816; --surface:#18211e; --surface-2:#1f2a26; --line:#2c3833; --fg:#e4ebe7; --muted:#9aa9a2;
+  --accent:#5fb8a2; --accent-ink:#0d1714; --accent-soft:#1d3530; --warn:#e8a64a; --rail:#0b1311; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding-block:36px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:44px}
+header{display:flex;flex-direction:column;gap:10px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,5vw,52px);line-height:1.05;margin:0;color:var(--accent);text-wrap:balance}
+.lede{font-size:18px;max-width:62ch;margin:0;color:var(--fg)}
+.meta{font-size:13px;color:var(--muted)}
+h2{font-family:var(--f-display);font-weight:600;font-size:24px;margin:0;text-wrap:balance}
+section{display:flex;flex-direction:column;gap:16px}
+.sub{color:var(--muted);font-size:14px;margin:0;max-width:65ch}
+.player{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+.screen{background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+video{display:block;width:100%;aspect-ratio:16/9;max-width:100%;background:#000}
+.partbar{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);padding:8px 2px 0;font-variant-numeric:tabular-nums;font-family:var(--f-mono)}
+.chapters{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;max-height:min(520px,70vh);overflow:auto}
+.chapters li+li{border-top:1px solid var(--line)}
+.chap{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:48px 1fr;gap:10px;width:100%;padding:10px 14px}
+.chap:hover{background:var(--surface-2)}
+.chap:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.chap.on{background:var(--accent-soft)}
+.ct{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);padding-top:1px;font-variant-numeric:tabular-nums}
+.chap.on .ct{color:var(--accent);font-weight:500}
+.cn{display:flex;flex-direction:column;min-width:0}
+.cn b{font-weight:600;font-size:14px}
+.cn small{color:var(--muted);font-size:12.5px}
+.proto{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:center;background:var(--rail);color:#e6efeb;border-radius:12px;padding:24px}
+.proto h2{color:#fff}
+.proto p{margin:0;color:#c3d6cf;max-width:52ch}
+.proto ol{margin:0;padding-left:20px;color:#c3d6cf;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.proto kbd{font-family:var(--f-mono);background:rgba(255,255,255,.12);border-radius:4px;padding:0 6px;font-size:12.5px;color:#fff}
+.cta{display:inline-flex;align-items:center;gap:8px;align-self:start;background:#7fd1bd;color:#0d1714;font-weight:700;text-decoration:none;padding:11px 18px;border-radius:8px}
+.cta:hover{background:#9adcca}
+.cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.proto-l{display:flex;flex-direction:column;gap:14px}
+.slides{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.slide{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.slide img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;max-width:100%}
+.slide figcaption{display:flex;align-items:baseline;gap:8px;padding:9px 12px;font-size:13.5px;font-weight:500}
+.slide figcaption span{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.slide figcaption em{margin-left:auto;font-style:normal;font-size:12px;color:var(--muted)}
+.files{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.file{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.file .kind{font-family:var(--f-mono);font-size:11.5px;color:var(--accent);font-weight:500;letter-spacing:.04em}
+.file b{font-size:15.5px}
+.file p{margin:0;color:var(--muted);font-size:13.5px;flex:1}
+.dl{all:unset;text-decoration:none;cursor:pointer;align-self:start;font-weight:600;font-size:13.5px;color:var(--accent);border:1px solid var(--line);border-radius:6px;padding:7px 12px}
+.dl:hover{background:var(--surface-2)}
+.dl:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dl[disabled]{opacity:.5;cursor:default}
+.note{font-size:12.5px;color:var(--muted);margin:0}
+details.tx{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+details.tx summary{cursor:pointer;padding:14px 18px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+details.tx summary::-webkit-details-marker{display:none}
+details.tx summary span{color:var(--muted);font-weight:400;font-size:13px}
+details.tx summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:10px}
+.txbody{padding:0 18px 18px;max-width:72ch;font-size:15px}
+.txbody p{margin:0 0 12px}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:860px){.player,.proto{grid-template-columns:1fr}.files{grid-template-columns:1fr}.chapters{max-height:none}}
+</style>
+<style>*{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Recorded demo · October 20, 2026</div>
+    <h1>Tributary</h1>
+    <p class="lede">An AI-enabled early warning system for third-party risk, shown through a medical device story: a critical sterilization supplier, an FDA-regulated product, and a COO who needs an answer by 5 o'clock.</p>
+    <div class="meta"><a href="https://github.com/level5consulting/stochastic-spm-demo" style="color:inherit">An example built with the Stochastic SPM Demo Kit</a> · Presented by Greg Stellflue, Level 5ive Consulting · 19-minute recording · Halvern Medical and Tributary are fictional; figures are illustrative</div>
+  </header>
+
+  <section aria-labelledby="watch">
+    <h2 id="watch">Watch the demo</h2>
+    <div class="player">
+      <div>
+        <div class="screen"><video id="vid" controls preload="metadata" playsinline poster="slide-1.jpg" src="demo-part1.mp4"></video></div>
+        <div class="partbar"><span id="partlbl">Part 1 of 2</span><span id="glob">0:00 / 19:13</span></div>
+      </div>
+      <ol class="chapters" id="chaps">
+<li><button type="button" class="chap" data-t="10"><span class="ct">0:10</span><span class="cn"><b>Open</b><small>The trailer: a supplier problem and a 5 o&#x27;clock deadline</small></span></button></li>
+<li><button type="button" class="chap" data-t="130"><span class="ct">2:10</span><span class="cn"><b>Act I - The leader&#x27;s exposure</b><small>Meet Halvern Medical and the COO&#x27;s question</small></span></button></li>
+<li><button type="button" class="chap" data-t="220"><span class="ct">3:40</span><span class="cn"><b>Act II - The analyst&#x27;s calendar</b><small>Maya&#x27;s week and the review-hours gap</small></span></button></li>
+<li><button type="button" class="chap" data-t="285"><span class="ct">4:45</span><span class="cn"><b>The evidence nobody reads</b><small>Years of documents, and the two-analyst option</small></span></button></li>
+<li><button type="button" class="chap" data-t="362"><span class="ct">6:02</span><span class="cn"><b>Act III - The hero moment</b><small>Tributary&#x27;s watch list</small></span></button></li>
+<li><button type="button" class="chap" data-t="445"><span class="ct">7:25</span><span class="cn"><b>The rewind</b><small>Brightwater&#x27;s risk history, signal by signal</small></span></button></li>
+<li><button type="button" class="chap" data-t="670"><span class="ct">11:10</span><span class="cn"><b>Where scores don&#x27;t belong</b><small>Meridian due diligence red flag</small></span></button></li>
+<li><button type="button" class="chap" data-t="720"><span class="ct">12:00</span><span class="cn"><b>Alternates</b><small>Three systems, three backup sterilizers</small></span></button></li>
+<li><button type="button" class="chap" data-t="780"><span class="ct">13:00</span><span class="cn"><b>The answer at 5 o&#x27;clock</b><small>Exposure window and revenue at risk</small></span></button></li>
+<li><button type="button" class="chap" data-t="980"><span class="ct">16:20</span><span class="cn"><b>Act IV - The value hypothesis</b><small>A 90-day Tributary pilot</small></span></button></li>
+<li><button type="button" class="chap" data-t="1060"><span class="ct">17:40</span><span class="cn"><b>Act V - The outcome realized</b><small>Two quarters later</small></span></button></li>
+<li><button type="button" class="chap" data-t="1120"><span class="ct">18:40</span><span class="cn"><b>Close</b><small>The evidence was already yours</small></span></button></li>
+      </ol>
+    </div>
+    <p class="note">The recording plays in two parts and continues automatically. Chapters jump straight to each section.</p>
+  </section>
+
+  <section class="proto" aria-labelledby="try">
+    <div class="proto-l">
+      <h2 id="try">Try Tributary yourself</h2>
+      <p>The same clickable prototype used in the recording. It opens in a new tab with Halvern's data loaded.</p>
+      <a class="cta" href="tributary.html" target="_blank" rel="noopener">Open Tributary →</a>
+    </div>
+    <ol>
+      <li>Start on the <b>Watch list</b> and click <b>Brightwater Sterilization</b>.</li>
+      <li>Click timeline markers <b>1-4</b> to replay the signals.</li>
+      <li>Open <b>Due diligence</b> → <b>Meridian</b> for a red flag that gets no score.</li>
+      <li>Open <b>Reviews</b> → <b>RV-0412</b> for the exposure window and revenue at risk.</li>
+      <li>Press <kbd>B</kbd> for the "before" view: the spreadsheet tracker.</li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="slides">
+    <h2 id="slides">Slides</h2>
+    <p class="sub">Seven slides frame the story. Tributary carries Acts I and III.</p>
+    <div class="slides">
+<figure class="slide"><img src="slide-1.jpg" alt="Slide 1: Tributary" loading="lazy" width="1467" height="825"><figcaption><span>1</span>Tributary<em>Title</em></figcaption></figure>
+<figure class="slide"><img src="slide-2.jpg" alt="Slide 2: Meet Halvern Medical" loading="lazy" width="1467" height="825"><figcaption><span>2</span>Meet Halvern Medical<em>Act I</em></figcaption></figure>
+<figure class="slide"><img src="slide-3.jpg" alt="Slide 3: Maya&#x27;s week" loading="lazy" width="1467" height="825"><figcaption><span>3</span>Maya&#x27;s week<em>Act II</em></figcaption></figure>
+<figure class="slide"><img src="slide-4.jpg" alt="Slide 4: The evidence nobody reads" loading="lazy" width="1467" height="825"><figcaption><span>4</span>The evidence nobody reads<em>Act II</em></figcaption></figure>
+<figure class="slide"><img src="slide-5.jpg" alt="Slide 5: A 90-day Tributary pilot" loading="lazy" width="1467" height="825"><figcaption><span>5</span>A 90-day Tributary pilot<em>Act IV</em></figcaption></figure>
+<figure class="slide"><img src="slide-6.jpg" alt="Slide 6: Two quarters later" loading="lazy" width="1467" height="825"><figcaption><span>6</span>Two quarters later<em>Act V</em></figcaption></figure>
+<figure class="slide"><img src="slide-7.jpg" alt="Slide 7: The evidence was already yours" loading="lazy" width="1467" height="825"><figcaption><span>7</span>The evidence was already yours<em>Close</em></figcaption></figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="files">
+    <h2 id="files">Files</h2>
+    <div class="files">
+      <div class="file"><span class="kind">Markdown</span><b>Halvern pre-read</b><p>The company, its people and suppliers, and the discovery recap that set up the story.</p><a class="dl" href="https://github.com/level5consulting/stochastic-spm-demo/blob/main/examples/tprm/script/pre-read.md">Read on GitHub</a></div>
+      <div class="file"><span class="kind">PPTX · 7 slides</span><b>Demo deck</b><p>The slides with speaker notes, editable in PowerPoint.</p><a class="dl" href="Tributary_Demo_Deck.pptx" download>Download</a></div>
+      <div class="file"><span class="kind">Markdown</span><b>Demo script</b><p>The full script with stage directions: open, five acts, and close.</p><a class="dl" href="https://github.com/level5consulting/stochastic-spm-demo/blob/main/examples/tprm/script/full-script.md">Read on GitHub</a></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="tx">
+    <details class="tx">
+      <summary><b id="tx">Transcript</b><span>Auto-generated, lightly corrected for names</span></summary>
+      <div class="txbody">
+<p>Over the next 45 minutes, I&#x27;m going to tell a story about a medical device company. That medical device company gets some bad news from a critical supplier on a Tuesday morning. Its VP of supplier quality has until 5:00 to tell the COO how exposed they are. So by the end, she&#x27;ll answer this question in minutes. However. What we&#x27;ve found out from people in the past when talking about how these questions are answered, oftentimes it&#x27;s through something I like to call superhuman effort, because companies are managing their third-party risks in spreadsheets, in PowerPoint presentations, in PDF files, in e-mail inboxes, in SharePoint document libraries.</p>
+<p>These kinds of questions, when a supplier issue comes up, oftentimes take them. Not hours, but days to answer. So today what we&#x27;re going to do is walk through a story where that leader gets to use a solution called Tributary to answer those questions. So Halvern&#x27;s team, that&#x27;s the name of the medical device company, has a product that is called, excuse me, Steadia. Steadia is a glucose monitor, a continuous glucose monitor. It has a disposable wearable sensor and a reusable transmitter. So the... supplier for those reusable transmitters are going, is the one who&#x27;s going to have a problem. So let&#x27;s take a minute to meet the Halvern Medical team. So Dana Whitfield is our VP of Global Supplier Quality and Third Party Risk. Dana&#x27;s boss.</p>
+<p>is the COO, and Maya Ortiz is a third party risk management person that works for Dana. Brightwater Sterilization is the organization that called us and said they have a site under state review and that their capacity may drop. Now, the COO&#x27;s obvious question is how exposed are we? And he needs to know by 915 tomorrow or a meeting with the COO. These are the kinds of things that keep our organization up at night trying to answer that question the next morning. What if we could change that from 915 the next morning to having that answer within minutes?</p>
+<p>for that COO. That&#x27;s what we&#x27;re going to try to show today with Tributary. It may not always be minutes. There may be some work that has to happen. So in this case, it may take us half a day, but we&#x27;re going to have a very solid, very data-driven answer for that COO for what the impact is for Brightwater sterilization. Before we dive into the solution, let&#x27;s take a look at a little more deeply at the problem, at what Maya and Dana face on a daily basis. As I said a little bit in the introduction, Maya&#x27;s week is spent chasing overdue questionnaires, waiting on InfoSec, doing business escalations, rekeying evidence, trying to build a quarterly risk report. And all this is being done by hand with PDFs and spreadsheets and SharePoint systems and e-mail traces and All of that takes time. Right now, Maya and her two colleagues have approximately 5000 hours available a year. The amount of work that Maya and Dana have.</p>
+<p>estimated that this would take is around 7,000 hours a year. So to do this job right, Maya and Dana already know that it will take 7,000 hours a year. We&#x27;re going to show a way that Maya and Dana and the team can get this done in 5,000 hours or less. Here&#x27;s the things that everybody wants to read, but nobody has time to read. The audit reports, the corrective action responses, the quality agreement deviations. All of these things are the thousands of documents that are across separate systems for Halvern Medical&#x27;s 1400 suppliers that are why. Maya and Dana went to the COO and asked for two more analysts. Now the COO, having worked at another place that had a third-party risk management system, sent Dana and Maya to come look at third-party risk management systems, which is a great place to be. And that&#x27;s why we&#x27;re here to show you Tributary Today.</p>
+<p>So without further ado, let&#x27;s jump into what I like to call the hero moment. This is where we get to see how Tributary can solve these questions that are on the last two pages very quickly and very easily. So I&#x27;m going to exit out of... Here for a moment, and I&#x27;m going to bring up our Tributary early warning system, so... When Tributary comes up, it starts out on a watch list. So instead of having 1400 suppliers to look at, there are 20 to look at. Four of them are above the watch line, seven of them have reviews open, and 1300 are on baseline monitoring. So Maya&#x27;s week starts with something actionable.</p>
+<p>She can look at those potentially 4 above the watch list line. Corvain Semiconductor is having issues with lead times. Castro Contract has two corrective actions due and three past due and three audit findings. North peak cloud hosting has a published vulnerability in a hosted platform component. All of those things need to be addressed. But today, because we got the e-mail from Brightwater about their capacity review at the Marlowe site, Maya needs to dig into Brightwater sterilization. So let&#x27;s take a look at what&#x27;s going on with Brightwater sterilization.</p>
+<p>We drill down into Brightwater sterilization, and we see that their risk history has four events that have happened over the past 90 days. The first of those events was questionnaire latency. It took them 52 days to get their third party questionnaire returned. Normally they&#x27;re in the five, 6, 8 days. So Maya has a follow up to find out the reason behind that delay. Maya hasn&#x27;t gotten to that yet. So that is still outstanding. Could be nothing. It could be that we sent it to the wrong place. It could be someone who&#x27;s on paternity or maternity leave. Lots of different reasons why that could be. It just raises our risk level somewhat.</p>
+<p>Now, this second risk puts it above the watch line. That happened way back on September 8th, six weeks ago. So if Tributary had been in place at the time, Maya and Dana would have had a six-week early warning because the questionnaire they submitted on August 28th, which was 52 days late, said they had no open regulatory actions at any facility. However, our research had found that there was a notice of a compliance review at the Brightwater sterilization Marlowe facility, exactly the facility that Brightwater has said would have to go offline. If that is the case, six weeks ago, we could have started our review and our search for how we&#x27;re going to replace the capacity that we may lose at the Marlowe facility from Brightwater sterilization. That 6 weeks we&#x27;re going to see in the end here would have been worth a lot of money every week. And we&#x27;ll see that number here when we get to #4. The third thing that happened on September 29th is one of their responses to a scar was a recycled corrective action. It looks exactly like what they responded in March of 24.</p>
+<p>RAI found that there&#x27;s a 91% chance of similarity in those two things. Yet another reason why we need to be managing more closely Brightwater sterilization. And finally, today, we&#x27;ve got the e-mail from Brightwater that it&#x27;s under state environmental reviews. Capacity may be reduced. They haven&#x27;t given us a timeline. We are in a world of uncertainty that potentially we could have looked at six weeks ago. So what are the ways that we potentially could have looked at this six weeks ago? Ohh, wait. before we go there, because our days never go just like this with a straight line sort of flow to it, someone called out to us and said, hey, there&#x27;s a due diligence happening at one of our LATAM companies. Can you tell me what&#x27;s wrong with that? Well, imagine in the past, when you were using all of those manual ways, what it would have taken to do that, right? If you had to stop this, that&#x27;s the reason why stopping these and trying to do something else, that&#x27;s a reason why these take a long time, because that test switching and that context switching could cost us, usually cost us a lot. But what if we could context switch to that due diligence?</p>
+<p>in just a couple of quicks and answer that question. So the third party is Meridian Distribution. They&#x27;re A LATAM distributor. They&#x27;re onboarding. There&#x27;s a red flag forum. One more click gets me to, there&#x27;s a government official link. One of Meridian&#x27;s owners has a close family relationship. with an official at a national health authority that approves device reimbursement. That is definitely a red flag. Our chief compliance officer is working on it. We answered that question in three clicks and we can go back to our watch list now and go back to Meridian.</p>
+<p>and #4 and continue to do our review with that. So those context switches now take almost no time for us. And we&#x27;re able to continue on with this and start to check alternatives and look and see that we have 3 alternatives to Brightwater. sterilization. Their Aspie site is 92% utilized. There&#x27;s a new Kelso sterilization services that has no validation on file and is not qualified. And we&#x27;ve gone down the validation path with Ridgeway Medical. Their validation expired in 22. 2022, and they&#x27;re not certified to do our ETO sterilization that we need. So it&#x27;s not a valid alternative. So if we go back to our risk history and we click this button for start review, we&#x27;re going to get automatically generated a review that we can present to the COO. One click, automatic generation. The review says by looking at our...</p>
+<p>current sensors on hand through supply chain were covered for six weeks. The Ashby site can absorb about another two weeks worth of capacity if we can get that other 8% capacity from them. That means that we have Eight weeks of coverage. That means 12 to 18 weeks are exposure, okay? Our standard revenue per month is 40 million. Our monthly supply through Marlowe at 80% would be 32 million. At risk is 7 to 8 million per week. for that coverage. And over 8 weeks, that means we&#x27;ve got up to $64 million that is going to be at risk. That&#x27;s a big risk for a mid-size organization like Halvern Medical. So what are the actions we&#x27;re going to take? Well, we&#x27;re going to try and make sure we secure that additional capacity at Brightwater, the Ashby site.</p>
+<p>We&#x27;re going to start that second qualification of another sterilizer. We&#x27;re going to remove and clean up the data that&#x27;s in there for the unqualified backups. We&#x27;re going to request the corrected attestation and site status from Brightwater because we&#x27;re going to need that for any FDA. reviews that we may have coming forward. And then we&#x27;re going to brief the COO on our exposure window on a plan. And that brief is giving him all of this information, these charts and these tables, and this summary for them. About 6 weeks of sterilized sensors are on hand.</p>
+<p>plus two more weeks from the Ashby site that can be absorbed. A new sterilization is going to take 20 to 26 weeks. If Marlowe is down more than 8 weeks, we have a gap of 32 million a month of supply that runs through Marlowe, so roughly 7 to 8. at risk per week, more than $100 million worst case, and we need to plan priority capacity at Ashby now so we can get a second sterilization qualified. within those 20 to 26 weeks. So. That is the picture, the hero moment of how Tributary could benefit Halvern Medical. Very, very solid case. and also very much less expensive than hiring 2 new analysts. We&#x27;ll talk through some of that in the next slides that I&#x27;m going to go through. I want to stop there and say thank you for the demonstration, because now we&#x27;re going to switch over to how we can make sure that Halvard Medical gets that value. What are the ways that Tributary, that we can use Tributary and we can provide value to Halvard Medical in the very short term? Our suggestion is that we create a 90-day Tributary pilot, and this is what we measure. Critical suppliers with evidence newer than 90 days. Today, you&#x27;re getting under half of that.</p>
+<p>In the pilot, we&#x27;re going to grab nearly all of those so that you&#x27;ll have a great understanding of the critical suppliers. The single source suppliers with a qualified alternative, you know, that&#x27;s unknown. All those are identified are each going to have a plan like we saw. The time to produce the prior clinical evidence for the FDA takes days now, we&#x27;re going to target to reduce that down to minutes. The analyst hours on critical and low risk suppliers, that&#x27;s spread out by the calendar. That&#x27;s going to be weighted according to risk. And early warning accuracy is not measured at all. We&#x27;re going to back test that on the entire past year. So this scope with Dana as the sponsor run by Maya and members of the Tributary team is going to be proven out over the next 90 days. As a COO, as a VP, these are the things that are going to make your lives much easier and help to make sure that you&#x27;re not awake at night and working on weekends to make all of this happen.</p>
+<p>So what is it going to look like 2 quarters from now? There&#x27;s going to be no supply gap. Ashby, the capacity was secured the same week. The second sterilization is on track for next quarter. There&#x27;s four more exposures that we found, very similar to what happened at Brightwater. Those will all get cleaned up. There&#x27;s no observations that on FDA inspections, the Tributary reviews held up as supplier controlled evidence. And lastly, we may not clean everything up. The lead times for Corvane, if you remember, that was one of the things that was at the top.</p>
+<p>They keep stretching. It&#x27;s on the watch list every week. We&#x27;re working with Corvain to try and figure out how to meet those chip lead times. So I want to thank you all for taking the time to watch this demonstration today. The bottom line is the evidence was already yours. What Tributary is going to do is it&#x27;s going to take that evidence and it&#x27;s going to give you the capability to answer things continuously with data-driven answers. Thank you.</p>
+      </div>
+    </details>
+  </section>
+
+  <footer>Built by Greg Stellflue, Level 5ive Consulting, as a worked example of what the free <a href="https://github.com/level5consulting/stochastic-spm-demo">Stochastic SPM Demo Kit</a> produces. Halvern Medical, Tributary, and every person and supplier in the story are fictional. · <a href="https://bookings.cloud.microsoft/bookwithme/user/dcceec89368b4eaaa3b2558d75329dc2@level5iveconsulting.com/meetingtype/u9JHaejWVk6c7OBoClRCmA2?anonymous&amp;ismsaljsauthenabled&amp;ep=mcard">Book a 20-minute walkthrough</a> · <a href="../spm/">See the original SPM demo</a></footer>
+</div>
+
+<script>
+(function(){
+  var PARTS=[{src:"demo-part1.mp4",start:0,len:580.06},{src:"demo-part2.mp4",start:580.06,len:573.41}];
+  var TOTAL=1153.4;
+  var v=document.getElementById("vid"), lbl=document.getElementById("partlbl"), glob=document.getElementById("glob");
+  var chaps=[].slice.call(document.querySelectorAll(".chap"));
+  var cur=0;
+  function fmt(s){s=Math.max(0,Math.floor(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");}
+  function load(i,offset,play){
+    cur=i; lbl.textContent="Part "+(i+1)+" of "+PARTS.length;
+    var go=function(){try{v.currentTime=offset||0;}catch(e){} if(play){var p=v.play(); if(p&&p.catch)p.catch(function(){});}};
+    if(v.getAttribute("src")!==PARTS[i].src){v.setAttribute("src",PARTS[i].src); v.addEventListener("loadedmetadata",go,{once:true}); v.load();}
+    else go();
+  }
+  function seek(t){
+    var i=t>=PARTS[1].start?1:0; load(i,t-PARTS[i].start,true);
+  }
+  chaps.forEach(function(b){b.addEventListener("click",function(){seek(+b.dataset.t);});});
+  v.addEventListener("ended",function(){ if(cur<PARTS.length-1) load(cur+1,0,true); });
+  v.addEventListener("timeupdate",function(){
+    var g=PARTS[cur].start+v.currentTime; glob.textContent=fmt(g)+" / "+fmt(TOTAL);
+    var on=-1; chaps.forEach(function(b,k){ if(+b.dataset.t<=g+0.5) on=k; });
+    chaps.forEach(function(b,k){ b.classList.toggle("on",k===on); });
+  });
+
+})();
+</script>
+
+</body>
+</html>

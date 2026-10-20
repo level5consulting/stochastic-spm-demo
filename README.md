@@ -2,13 +2,13 @@
 
 Give a better demo. One config file builds an **interactive walkthrough**, a **slide deck** and a **run-of-show script** for a 60-minute, five-act demo of AI-enabled strategic portfolio management (SPM), built on the 7 Pillars framework.
 
-**Live demo:** enable GitHub Pages (Settings > Pages > Deploy from branch > `main` / `docs`) and it will appear at `https://level5consulting.github.io/stochastic-spm-demo/`.
+**Live demos:** https://level5consulting.github.io/stochastic-spm-demo/ (one page with both examples: SPM and third-party risk).
 
 > *Stochastic (adj.)* - governed by probability, not fixed rules. The opposite of a guess.
 
 ## Just want to play? (2 minutes)
 
-1. Open `docs/index.html` in a browser. That is the full walkthrough.
+1. Open `docs/spm/index.html` in a browser. That is the full walkthrough.
 2. Want it to say your company name and show your CTA? Edit `kit/demo-config.json`, then run:
 
 ```bash
@@ -18,6 +18,10 @@ python3 build_all.py
 ```
 
 You get `demo.html`, `deck.pptx` and `run-of-show.docx` in `kit/`.
+
+## Proof it works: a second demo built with the kit
+
+[**Tributary - third-party risk (TPRM)**](https://level5consulting.github.io/stochastic-spm-demo/tprm/) is a complete 45-minute demo for a different domain, built with the same five-act structure: a recorded walkthrough with chapters, a clickable prototype, a 7-slide deck with speaker notes, and the full script. It is an example of what the kit produces. Source files are in [`examples/tprm/`](examples/tprm/).
 
 ## Presenting it
 
@@ -34,7 +38,7 @@ In `examples/`:
 - `Stochastic_SPM_Run_of_Show.docx` - the full presenter script
 - `demo-config.example.json` - the config that produced them
 
-The interactive demo is `docs/index.html`. Using them as-is gives you the complete 60-minute demo; rebuild from `kit/` when you want your own names, numbers and story.
+The interactive demo is `docs/spm/index.html`. Using them as-is gives you the complete 60-minute demo; rebuild from `kit/` when you want your own names, numbers and story.
 
 ## Use it with Claude
 

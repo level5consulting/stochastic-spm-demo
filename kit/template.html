@@ -144,11 +144,12 @@ canvas{max-height:230px;}
 .site-foot .disc{margin-bottom:4px;font-style:italic;}
 .illus-tag{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;background:var(--amber);color:#fff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:999px;z-index:50;opacity:.92;}
 .act-btn.active{background:var(--teal-dim);}
-.pn-btn{position:fixed;right:14px;top:14px;z-index:60;background:#fff;border:1px solid var(--line);color:var(--text-dim);font:600 12px var(--mono);padding:6px 12px;border-radius:999px;cursor:pointer;}
+.pn-btn{position:fixed;right:14px;top:62px;z-index:60;background:#fff;border:1px solid var(--line);color:var(--text-dim);font:600 12px var(--mono);padding:6px 12px;border-radius:999px;cursor:pointer;}
 .pn-btn.on{background:var(--teal);color:#fff;border-color:var(--teal);}
 .pn{position:fixed;right:0;top:0;bottom:0;width:min(400px,92vw);background:#fff;border-left:1px solid var(--line);box-shadow:-8px 0 24px rgba(20,30,50,.08);z-index:55;overflow:auto;padding:58px 18px 24px;transform:translateX(105%);transition:transform .22s;}
 .pn.open{transform:none;}
 body.pn-open{padding-right:min(400px,92vw);transition:padding .22s;}
+body.pn-open .pn-btn{top:14px;}
 body.pn-open .illus-tag{left:calc(50% - 200px);}
 .pn h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin:0 0 4px;}
 .pn .pn-time{font:11px var(--mono);color:var(--text-faint);margin-bottom:12px;}
@@ -191,6 +192,7 @@ body.pn-open .illus-tag{left:calc(50% - 200px);}
     <div class="cta"><span id="cfgCtaLabel"></span> <a id="cfgCtaBtn" class="cta-btn" target="_blank" rel="noopener"></a></div>
     <div class="disc" id="cfgDisc"></div>
     <div class="repo"><a id="cfgRepo" target="_blank" rel="noopener"></a></div>
+    <div class="repo" id="cfgExWrap"><a id="cfgEx" target="_blank" rel="noopener"></a></div>
     <div class="attr" id="cfgAttr"></div>
   </footer>
 </div>
@@ -693,6 +695,7 @@ function drawAdoption(){
   const a=$('cfgCtaBtn'); a.textContent=CFG.cta.button; a.href=CFG.cta.url;
   $('cfgDisc').textContent=CFG.footer.disclaimer;
   $('cfgAttr').textContent=CFG.footer.attribution;
+  const ex=$('cfgEx'); if(CFG.footer.example_url){ ex.href=CFG.footer.example_url; ex.textContent=CFG.footer.example_label||'See an example'; } else { $('cfgExWrap').style.display='none'; }
   const rp=$('cfgRepo'); if(CFG.footer.repo_url){ rp.href=CFG.footer.repo_url; rp.textContent='★ '+(CFG.footer.repo_label||'View on GitHub'); } else { rp.parentElement.style.display='none'; }
   const t=document.createElement('div'); t.className='illus-tag'; t.textContent='Illustrative data'; document.body.appendChild(t);
 })();
